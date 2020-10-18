@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'Accounts.dart';
+
 class StartPage extends StatelessWidget {
   StartPage({Key key, this.title}) : super(key: key);
 
@@ -54,17 +56,17 @@ class StartPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _getIconSurveys("icon/bank.png", 'Счета'),
-                      _getIconSurveys("icon/income.png", 'Доходы'),
-                      _getIconSurveys("icon/spend.png", 'Расходы'),
+                      _getIconSurveys("icon/bank.png", 'Счета',context,(context) => Accounts(title:"Счета")),
+                      _getIconSurveys("icon/income.png", 'Доходы',context,(context) => Accounts(title:"Доходы")),
+                      _getIconSurveys("icon/spend.png", 'Расходы',context,(context) => Accounts(title:"Расходы")),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _getIconSurveys("icon/down.png", 'Категории\nрасходов'),
-                      _getIconSurveys("icon/up.png", 'Категории\nдоходов'),
-                      _getIconSurveys("icon/xz.png", 'Что - то'),
+                      _getIconSurveys("icon/down.png", 'Категории\nрасходов',context,(context) => Accounts(title:"Категории\nрасходов")),
+                      _getIconSurveys("icon/up.png", 'Категории\nдоходов',context,(context) => Accounts(title:"Категории\nдоходов")),
+                      _getIconSurveys("icon/xz.png", 'Что - то',context,(context) => {}),
                     ],
                   ),
                 ]))));
@@ -72,11 +74,14 @@ class StartPage extends StatelessWidget {
 }
 
 
-Widget _getIconSurveys(String imgPath, String name) {
+Widget _getIconSurveys(String imgPath, String name, BuildContext context,Function nextPage) {
   return Padding(
       padding: EdgeInsets.all(10.0),
       child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: nextPage ));
+          },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[

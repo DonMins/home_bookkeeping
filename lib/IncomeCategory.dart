@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'AddIncomeCategory.dart';
+import 'AddIncomeCategory.dart';
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
@@ -59,7 +60,18 @@ class IncomeCategoryForm extends State<IncomeCategory> {
                         dbHelper.deleteIncomeCategory(item.id);
                         refreshList();
                       },
-                    ));
+                    ),
+                  onTap: () async {
+                    Object refresh = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddIncomeCategory(
+                                title: "Обновить категорию",
+                                isUpdating: true,
+                                curUserId: item.id, nameCategory:item.nameCategory)));
+                    if (refresh != null) refreshList();
+                  },
+                );
               },
             );
           } else {
@@ -112,8 +124,8 @@ class IncomeCategoryForm extends State<IncomeCategory> {
           Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      AddIncomeCategory(title: "Добавить категорию")));
+                  builder: (context) => AddIncomeCategory(
+                      title: "Добавить категорию", isUpdating: false)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

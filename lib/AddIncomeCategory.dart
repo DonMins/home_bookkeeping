@@ -8,19 +8,25 @@ import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
 class AddIncomeCategory extends StatefulWidget {
-  AddIncomeCategory({Key key, this.title}) : super(key: key);
+  AddIncomeCategory({Key key, this.title, this.isUpdating, this.curUserId,this.nameCategory})
+      : super(key: key);
+
   final String title;
+  final String nameCategory;
+  final bool isUpdating;
+  final int curUserId;
 
   @override
   State<StatefulWidget> createState() {
-    return AddIncomeCategoryDb(title);
+    return AddIncomeCategoryDb(title, isUpdating, curUserId,nameCategory);
+
   }
 }
 
 class AddIncomeCategoryDb extends State<AddIncomeCategory> {
   String title;
+  AddIncomeCategoryDb(this.title, this.isUpdating, this.curUserId,this.nameCategory);
 
-  AddIncomeCategoryDb(this.title);
 
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
   TextEditingController controller = TextEditingController();
@@ -35,7 +41,6 @@ class AddIncomeCategoryDb extends State<AddIncomeCategory> {
   void initState() {
     super.initState();
     dbHelper = HelperDB();
-    isUpdating = false;
   }
 
   validate() {
@@ -43,7 +48,7 @@ class AddIncomeCategoryDb extends State<AddIncomeCategory> {
       formKey.currentState.save();
       if (isUpdating) {
         IncomeCategoryDb e = IncomeCategoryDb(curUserId, nameCategory);
-        dbHelper.update(e);
+        dbHelper.updateIncomeCategory(e);
         setState(() {
           isUpdating = false;
         });
@@ -103,7 +108,7 @@ class AddIncomeCategoryDb extends State<AddIncomeCategory> {
                   verticalDirection: VerticalDirection.down,
                   children: <Widget>[
                     TextFormField(
-                        controller: controller,
+                        controller: TextEditingController(text: nameCategory == null ? "" : nameCategory),
                         keyboardType: TextInputType.text,
                         decoration:
                             InputDecoration(labelText: 'Название категории'),

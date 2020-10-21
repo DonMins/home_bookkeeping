@@ -109,7 +109,6 @@ class AddExpenseCategoryDb extends State<AddExpenseCategory> {
                   children: <Widget>[
                     TextFormField(
                         controller: TextEditingController(text: nameCategory == null ? "" : nameCategory),
-                        // initialValue: nameCategory == null ? "f" : nameCategory,
                         keyboardType: TextInputType.text,
                         decoration:InputDecoration(labelText: 'Название категории'),
                         validator: (val) => val.length == 0

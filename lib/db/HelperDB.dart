@@ -11,8 +11,11 @@ class HelperDB {
   static Database _db;
   static const String ID = 'id';
   static const String NAME = 'name';
+  static const String cartNum = 'cartNum';
+  static const String balance = 'balance';
+  static const String description = 'description';
   static const String TABLE = 'AccountDB';
-  static const String DB_NAME = 'accountDb.db';
+  static const String DB_NAME = 'accountDb3.db';
 
   Future<Database> get db async {
     if (_db != null) {
@@ -25,13 +28,19 @@ class HelperDB {
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, DB_NAME);
+    await deleteDatabase(path);
+
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
+
     return db;
   }
 
   _onCreate(Database db, int version) async {
     await db
-        .execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $NAME TEXT)");
+        .execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $NAME TEXT, "
+        "$cartNum TEXT,"
+        " $description TEXT,"
+        "$balance REAL)");
   }
 
   Future<AccountDB> save(AccountDB employee) async {
@@ -48,8 +57,8 @@ class HelperDB {
 
   Future<List<AccountDB>> getEmployees() async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME]);
-    //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
+    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME,cartNum,description,balance]);
+    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
     List<AccountDB> employees = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {

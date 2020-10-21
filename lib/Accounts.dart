@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:home_bookkeeping/db/HelperDB.dart';
 
 import 'AddAccounts.dart';
 import 'db/AccountDB.dart';
+import 'db/HelperDB.dart';
 
 class Accounts extends StatefulWidget {
   Accounts({Key key, this.title}) : super(key: key);
@@ -39,11 +39,11 @@ class _DBTestPageState extends State<Accounts> {
 
   refreshList() {
     setState(() {
-      employees = dbHelper.getEmployees();
+      employees = dbHelper.getAccounts();
     });
   }
 
-  SingleChildScrollView dataTable(List<AccountDB> employees) {
+  SingleChildScrollView dataTable(List<AccountDB> accounts) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: DataTable(
@@ -64,17 +64,17 @@ class _DBTestPageState extends State<Accounts> {
             label: Text('DELETE'),
           )
         ],
-        rows: employees
+        rows: accounts
             .map(
-              (employee) => DataRow(cells: [
+              (account) => DataRow(cells: [
                 DataCell(
-                  Text(employee.name),
+                  Text(account.name),
                   onTap: () {
                     setState(() {
                       isUpdating = true;
-                      curUserId = employee.id;
+                      curUserId = account.id;
                     });
-                    controller.text = employee.name;
+                    controller.text = account.name;
                   },
                 ),
             // DataCell(
@@ -88,30 +88,30 @@ class _DBTestPageState extends State<Accounts> {
             //   },
             // ),
                 DataCell(
-                  Text(employee.description),
+                  Text(account.description),
                   onTap: () {
                     setState(() {
                       isUpdating = true;
-                      curUserId = employee.id;
+                      curUserId = account.id;
                     });
-                    controller.text = employee.description;
+                    controller.text = account.description;
                   },
                 ),
                 DataCell(
-                  Text(employee.balance.toString()),
+                  Text(account.balance.toString()),
                   onTap: () {
                     setState(() {
                       isUpdating = true;
-                      curUserId = employee.id;
+                      curUserId = account.id;
                     });
-                    controller.text = employee.balance.toString();
+                    controller.text = account.balance.toString();
                   },
                 ),
 
             DataCell(IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                dbHelper.delete(employee.id);
+                dbHelper.deleteAccount(account.id);
                 refreshList();
               },
             )),
@@ -189,11 +189,12 @@ class _DBTestPageState extends State<Accounts> {
         ),
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AddAccounts(title: "Cчет")));
+          if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),
       ),

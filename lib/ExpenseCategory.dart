@@ -1,28 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/AddExpenseCategory.dart';
 import 'AddIncomeCategory.dart';
+import 'db/ExpenseCategoryDb.dart';
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
-class IncomeCategory extends StatefulWidget {
-  IncomeCategory({Key key, this.title}) : super(key: key);
+class ExpenseCategory extends StatefulWidget {
+  ExpenseCategory({Key key, this.title}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return IncomeCategoryForm(title);
+    return ExpenseCategoryForm(title);
   }
 
   final String title;
 }
 
-class IncomeCategoryForm extends State<IncomeCategory> {
-  Future<List<IncomeCategoryDb>> incomeCategoryDb;
+class ExpenseCategoryForm extends State<ExpenseCategory> {
+  Future<List<ExpenseCategoryDb>> expenseCategoryDb;
   TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;
 
-  IncomeCategoryForm(this.title);
+  ExpenseCategoryForm(this.title);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -38,28 +40,39 @@ class IncomeCategoryForm extends State<IncomeCategory> {
 
   refreshList() {
     setState(() {
-      incomeCategoryDb = dbHelper.getIncomeCategory();
+      expenseCategoryDb = dbHelper.getExpenseCategory();
     });
   }
 
   list() {
-    return FutureBuilder<List<IncomeCategoryDb>>(
-        future: incomeCategoryDb,
+    return FutureBuilder<List<ExpenseCategoryDb>>(
+        future: expenseCategoryDb,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
-                IncomeCategoryDb item = snapshot.data[index];
+                ExpenseCategoryDb item = snapshot.data[index];
                 return ListTile(
-                    title: Text(item.nameCategory),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        dbHelper.deleteIncomeCategory(item.id);
-                        refreshList();
-                      },
-                    ));
+                  title: Text(item.nameCategory),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      dbHelper.deleteExpenseCategory(item.id);
+                      refreshList();
+                    },
+                  ),
+                  onTap: () async {
+                    Object refresh = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddExpenseCategory(
+                                title: "Обновить категорию",
+                                isUpdating: true,
+                                curUserId: item.id, nameCategory:item.nameCategory)));
+                    if (refresh != null) refreshList();
+                  },
+                );
               },
             );
           } else {
@@ -112,8 +125,8 @@ class IncomeCategoryForm extends State<IncomeCategory> {
           Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      AddIncomeCategory(title: "Добавить категорию")));
+                  builder: (context) => AddExpenseCategory(
+                      title: "Добавить категорию", isUpdating: false)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

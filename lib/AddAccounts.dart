@@ -43,7 +43,7 @@ class _DBTestPageState extends State<AddAccounts> {
 
   refreshList() {
     setState(() {
-      employees = dbHelper.getEmployees();
+      employees = dbHelper.getAccounts();
     });
   }
 
@@ -62,9 +62,9 @@ class _DBTestPageState extends State<AddAccounts> {
         });
       } else {
         AccountDB e = AccountDB(null, name,balance,cartNum,description);
-        dbHelper.save(e);
+        dbHelper.saveAccount(e);
       }
-      Navigator.pop(context,1);
+      Navigator.pop(context, true);
     }
   }
 
@@ -205,7 +205,7 @@ class _DBTestPageState extends State<AddAccounts> {
           onSaved: (val) => balance = double.parse(val),
         ),
         RaisedButton.icon(
-          onPressed: validate,
+          onPressed : validate,
           color:  Color.fromRGBO(59, 187, 203, 1),
           textColor: Colors.white,
           icon: Icon(Icons.save),

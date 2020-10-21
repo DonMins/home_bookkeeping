@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:basic_utils/basic_utils.dart';
 
 import 'AddAccounts.dart';
 import 'db/AccountDB.dart';
@@ -17,7 +18,7 @@ class Accounts extends StatefulWidget {
 }
 
 class _DBTestPageState extends State<Accounts> {
-  Future<List<AccountDB>> employees;
+  Future<List<AccountDb>> accountDb;
   TextEditingController controller = TextEditingController();
   String name;
   int curUserId;
@@ -39,113 +40,105 @@ class _DBTestPageState extends State<Accounts> {
 
   refreshList() {
     setState(() {
-      employees = dbHelper.getAccounts();
+      accountDb = dbHelper.getAccounts();
     });
   }
 
-  SingleChildScrollView dataTable(List<AccountDB> accounts) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: DataTable(
-        columns: [
-          DataColumn(
-            label: Text('NAME'),
-          ),
-          // DataColumn(
-          //   label: Text('cartNum'),
-          // ),
-          DataColumn(
-            label: Text('description'),
-          ),
-          DataColumn(
-            label: Text('balance'),
-          ),
-          DataColumn(
-            label: Text('DELETE'),
-          )
-        ],
-        rows: accounts
-            .map(
-              (account) => DataRow(cells: [
-                DataCell(
-                  Text(account.name),
-                  onTap: () {
-                    setState(() {
-                      isUpdating = true;
-                      curUserId = account.id;
-                    });
-                    controller.text = account.name;
-                  },
-                ),
-            // DataCell(
-            //   Text(employee.cartNum),
-            //   onTap: () {
-            //     setState(() {
-            //       isUpdating = true;
-            //       curUserId = employee.id;
-            //     });
-            //     controller.text = employee.cartNum;
-            //   },
-            // ),
-                DataCell(
-                  Text(account.description),
-                  onTap: () {
-                    setState(() {
-                      isUpdating = true;
-                      curUserId = account.id;
-                    });
-                    controller.text = account.description;
-                  },
-                ),
-                DataCell(
-                  Text(account.balance.toString()),
-                  onTap: () {
-                    setState(() {
-                      isUpdating = true;
-                      curUserId = account.id;
-                    });
-                    controller.text = account.balance.toString();
-                  },
-                ),
-
-            DataCell(IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                dbHelper.deleteAccount(account.id);
-                refreshList();
-              },
-            )),
-          ]),
-        )
-            .toList(),
-      ),
-    );
+  prettify(str) {
+    var arr = str.split(".");
+    return StringUtils.reverse(StringUtils.addCharAtPosition(
+            StringUtils.reverse(arr[0]), " ", 3,
+            repeat: true)) +
+        "." +
+        arr[1];
   }
 
   list() {
-    return Expanded(
-      child: FutureBuilder(
-        future: employees,
+    return FutureBuilder<List<AccountDb>>(
+        future: accountDb,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return dataTable(snapshot.data);
-          }
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                AccountDb item = snapshot.data[index];
+                return Card(
+                    child: ListTile(
+                  leading: Icon(
+                    Icons.account_balance_wallet,
+                    color: Colors.red,
+                    size: 50,
+                  ),
+                  title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(item.name),
+                        Text(prettify(item.balance.toString()) + 'p',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                      ]),
+                  subtitle: Text(item.description),
+                  trailing: new PopupMenuButton(
+                    itemBuilder: (_) => <PopupMenuItem<String>>[
+                      new PopupMenuItem<String>(
+                          child: const Text('Редактировать'), value: '0'),
+                      new PopupMenuItem<String>(
+                          child: const Text('Удалить'), value: '1'),
+                    ],
+                    onSelected: (val) async {
+                      if (val == '0') {
+                        Object refresh = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddAccounts(
+                                    title: "Обновить счёт",
+                                    isUpdating: true,
+                                    curUserId: item.id,
+                                    balance:item.balance,
+                                    description:item.description,
+                                    name:item.name,
+                                    cartNum:item.cartNum)));
+                        if (refresh != null) refreshList();
+                      }
+                      if (val == '1') {
+                        dbHelper.deleteAccount(item.id);
+                        refreshList();
+                      }
+                    },
+                  ),
 
-          if (null == snapshot.data || snapshot.data.length == 0) {
-            return Text("No Data Found");
+                  // trailing: IconButton(
+                  //   icon: Icon(Icons.delete),
+                  //   onPressed: () {
+                  //     dbHelper.deleteAccount(item.id);
+                  //     refreshList();
+                  //     },
+                  // ),
+                  onTap: () async {
+                    // Object refresh = await Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => AddAccounts(
+                    //             title: "Обновить счёт",
+                    //             isUpdating: true,
+                    //             curUserId: item.id)));
+                    // if (refresh != null) refreshList();
+                  },
+                ));
+              },
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
           }
-
-          return CircularProgressIndicator();
-        },
-      ),
-    );
+        });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Счет",
+          "Счета",
           style: TextStyle(
             fontFamily: 'Comic',
             fontWeight: FontWeight.bold,
@@ -174,26 +167,17 @@ class _DBTestPageState extends State<Accounts> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Color.fromRGBO(240, 183, 153, 1),
-                      Color.fromRGBO(59, 187, 203, 1)
-                    ]))),
+              Color.fromRGBO(240, 183, 153, 1),
+              Color.fromRGBO(59, 187, 203, 1)
+            ]))),
       ),
-      body: new Container(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          verticalDirection: VerticalDirection.down,
-          children: <Widget>[
-            list(),
-          ],
-        ),
-      ),
+      body: list(),
       floatingActionButton: new FloatingActionButton(
         onPressed: () async {
           Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddAccounts(title: "Cчет")));
+                  builder: (context) => AddAccounts(title: "Cчета",isUpdating: false,)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

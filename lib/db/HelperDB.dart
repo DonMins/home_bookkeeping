@@ -55,7 +55,7 @@ class HelperDB {
         .execute("CREATE TABLE $TABLE_EXPENSE_CATEGORY ($ID INTEGER PRIMARY KEY, $NAME_CATEGORY TEXT)");
   }
 
-  Future<AccountDB> saveAccount(AccountDB account) async {
+  Future<AccountDb> saveAccount(AccountDb account) async {
     var dbClient = await db;
     account.id = await dbClient.insert(TABLE_ACCOUNT, account.toMap());
     return account;
@@ -67,14 +67,14 @@ class HelperDB {
     */
   }
 
-  Future<List<AccountDB>> getAccounts() async {
+  Future<List<AccountDb>> getAccounts() async {
     var dbClient = await db;
     // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME]);
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_ACCOUNT");
-    List<AccountDB> accounts = [];
+    List<AccountDb> accounts = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
-        accounts.add(AccountDB.fromMap(maps[i]));
+        accounts.add(AccountDb.fromMap(maps[i]));
       }
     }
     return accounts;
@@ -85,7 +85,7 @@ class HelperDB {
     return await dbClient.delete(TABLE_ACCOUNT, where: '$ID = ?', whereArgs: [id]);
   }
 
-  Future<int> updateAccount(AccountDB employee) async {
+  Future<int> updateAccount(AccountDb employee) async {
     var dbClient = await db;
     return await dbClient.update(TABLE_ACCOUNT, employee.toMap(),
         where: '$ID = ?', whereArgs: [employee.id]);

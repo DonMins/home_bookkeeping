@@ -8,26 +8,44 @@ import 'db/AccountDB.dart';
 import 'db/HelperDB.dart';
 
 class AddAccounts extends StatefulWidget {
-  AddAccounts({Key key, this.title}) : super(key: key);
+  AddAccounts(
+      {Key key,
+      this.title,
+      this.isUpdating,
+      this.curUserId,
+      this.balance,
+      this.description,
+      this.name,
+      this.cartNum})
+      : super(key: key);
 
   final String title;
+  String name;
+  int curUserId;
+  double balance;
+  String cartNum;
+  String description;
+  bool isUpdating;
+
   @override
   State<StatefulWidget> createState() {
-    return _DBTestPageState();
+    return AccountsForm(
+        title, name, curUserId, balance, cartNum, description, isUpdating);
   }
 }
 
-
-
-
-class _DBTestPageState extends State<AddAccounts> {
-  Future<List<AccountDB>> employees;
+class AccountsForm extends State<AddAccounts> {
+  Future<List<AccountDb>> accountDb;
   TextEditingController controller = TextEditingController();
   String name;
   int curUserId;
   double balance;
   String cartNum;
   String description;
+  final String title;
+
+  AccountsForm(this.title, this.name, this.curUserId, this.balance,
+      this.cartNum, this.description, this.isUpdating);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -37,13 +55,12 @@ class _DBTestPageState extends State<AddAccounts> {
   void initState() {
     super.initState();
     dbHelper = HelperDB();
-    isUpdating = false;
     refreshList();
   }
 
   refreshList() {
     setState(() {
-      employees = dbHelper.getAccounts();
+      accountDb = dbHelper.getAccounts();
     });
   }
 
@@ -55,87 +72,25 @@ class _DBTestPageState extends State<AddAccounts> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        AccountDB e = AccountDB(curUserId, name,balance,cartNum,description);
-        dbHelper.update(e);
+        AccountDb e = AccountDb(curUserId, name, balance, cartNum, description);
+        dbHelper.updateAccount(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        AccountDB e = AccountDB(null, name,balance,cartNum,description);
+        AccountDb e = AccountDb(null, name, balance, cartNum, description);
         dbHelper.saveAccount(e);
       }
       Navigator.pop(context, true);
     }
   }
 
-  form() {
-    return Form(
-      key: formKey,
-      child: Padding(
-        padding: EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          verticalDirection: VerticalDirection.down,
-          children: <Widget>[
-            TextFormField(
-              controller: controller,
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(labelText: 'Name'),
-              validator: (val) => val.length == 0 ? 'Enter Name' : null,
-              onSaved: (val) => name = val,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                FlatButton(
-                  onPressed: validate,
-                  child: Text(isUpdating ? 'UPDATE' : 'ADD'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      isUpdating = false;
-                    });
-                    clearName();
-                  },
-                  child: Text('CANCEL'),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return new Scaffold(
-  //     appBar: new AppBar(
-  //       title: new Text('Flutter SQLITE CRUD DEMO'),
-  //     ),
-  //     body: new Container(
-  //       child: new Column(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         mainAxisSize: MainAxisSize.min,
-  //         verticalDirection: VerticalDirection.down,
-  //         children: <Widget>[
-  //           form(),
-  //           list(),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-  //
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Счет",
+          title,
           style: TextStyle(
             fontFamily: 'Comic',
             fontWeight: FontWeight.bold,
@@ -164,54 +119,61 @@ class _DBTestPageState extends State<AddAccounts> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Color.fromRGBO(240, 183, 153, 1),
-                      Color.fromRGBO(59, 187, 203, 1)
-                    ]))),
+              Color.fromRGBO(240, 183, 153, 1),
+              Color.fromRGBO(59, 187, 203, 1)
+            ]))),
       ),
       body: Form(
-        key: formKey,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            verticalDirection: VerticalDirection.down,
-            children: <Widget>[
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(labelText: 'Название счета'),
-          validator: (val) => val.length == 0 ? 'Введите название счета' : null,
-          onSaved: (val) => name = val,
-        ),
-        TextFormField(
-          decoration: InputDecoration(labelText: 'Описание'),
-          validator: (val) => val.length == 0 ? 'Введите описание' : null,
-          onSaved: (val) => description = val,
-        ),
-        TextFormField(
-          keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[
-            WhitelistingTextInputFormatter.digitsOnly
-          ],
-          decoration: InputDecoration(labelText: 'Номер карты'),
-          validator: (val) => val.length == 0 ? 'Введите номер карты' : null,
-          onSaved: (val) => cartNum = val,
-        ),
-        TextFormField(
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9]+([.][0-9]*)?|[.][0-9]+'))
-          ],
-          decoration: InputDecoration(labelText: 'Баланс'),
-          validator: (val) => val.length == 0 ? 'Введите баланс' : null,
-          onSaved: (val) => balance = double.parse(val),
-        ),
-        RaisedButton.icon(
-          onPressed : validate,
-          color:  Color.fromRGBO(59, 187, 203, 1),
-          textColor: Colors.white,
-          icon: Icon(Icons.save),
-          label: Text('Сохранить'),
-        ),
-      ])),
+          key: formKey,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              verticalDirection: VerticalDirection.down,
+              children: <Widget>[
+                TextFormField(
+                  controller: TextEditingController(text: name == null ? "" : name),
+                  decoration: InputDecoration(labelText: 'Название счета'),
+                  validator: (val) =>
+                      val.length == 0 ? 'Введите название счета' : null,
+                  onSaved: (val) => name = val,
+                ),
+                TextFormField(
+                  controller: TextEditingController(text: description == null ? "" : description),
+                  decoration: InputDecoration(labelText: 'Описание'),
+                  validator: (val) =>
+                      val.length == 0 ? 'Введите описание' : null,
+                  onSaved: (val) => description = val,
+                ),
+                TextFormField(
+                  controller: TextEditingController(text: cartNum == null ? "" : cartNum),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
+                  decoration: InputDecoration(labelText: 'Номер карты'),
+                  validator: (val) =>
+                      val.length == 0 ? 'Введите номер карты' : null,
+                  onSaved: (val) => cartNum = val,
+                ),
+                TextFormField(
+                  controller: TextEditingController(text: balance == null ? "" : balance.toString()),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]+([.][0-9]*)?|[.][0-9]+'))
+                  ],
+                  decoration: InputDecoration(labelText: 'Баланс'),
+                  validator: (val) => val.length == 0 ? 'Введите баланс' : null,
+                  onSaved: (val) => balance = double.parse(val),
+                ),
+                RaisedButton.icon(
+                  onPressed: validate,
+                  color: Color.fromRGBO(59, 187, 203, 1),
+                  textColor: Colors.white,
+                  icon: Icon(Icons.save),
+                  label: Text('Сохранить'),
+                ),
+              ])),
     );
   }
 }

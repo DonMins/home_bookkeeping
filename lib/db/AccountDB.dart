@@ -1,13 +1,13 @@
 import 'dart:ffi';
 
-class AccountDB {
+class AccountDb {
   int id;
   String name;
   double balance;
   String cartNum;
   String description;
 
-  AccountDB(this.id, this.name,this.balance,this.cartNum,this.description);
+  AccountDb(this.id, this.name,this.balance,this.cartNum,this.description);
   // AccountDB(this.id, this.name);
 
   Map<String, dynamic> toMap() {
@@ -21,7 +21,7 @@ class AccountDB {
     return map;
   }
 
-  AccountDB.fromMap(Map<String, dynamic> map) {
+  AccountDb.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     name = map['name'];
     balance = map['balance'];

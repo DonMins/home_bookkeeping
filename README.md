@@ -1,16 +1,13 @@
-# home_bookkeeping
+# Home_bookkeeping
 
-A new Flutter application.
+## Домашняя бухгалтерия
 
-## Getting Started
+### Задание
+Разработать приложение для ведения домашней бухгалтерии.
+Основные объекты приложения: Счёт, Категория доходов, Категория расходов и Операция. 
+Пользователю доступен список счетов и список категорий. 
+Пользователь может делать три вида операций: Приход, Расход и Перевод.
+Каждая операция имеет атрибуты: Метка времени, Тип, Значение (Всегда Положительное), 
+С какого счёта, На какой счёт, Категория (Расходная или Приходная),Описание.
+Счёт имеет атрибуты: Название, Описание, Баланс.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

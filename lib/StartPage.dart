@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/Income.dart';
 import 'package:home_bookkeeping/IncomeCategory.dart';
+import 'package:home_bookkeeping/Transfer.dart';
 import 'package:home_bookkeeping/db/ExpenseCategoryDb.dart';
 
 import 'Accounts.dart';
 import 'ExpenseCategory.dart';
+import 'Expenses.dart';
 import 'IncomeCategory.dart';
 
 class StartPage extends StatelessWidget {
@@ -63,7 +65,7 @@ class StartPage extends StatelessWidget {
                     children: [
                       _getIconSurveys("icon/bank.png", 'Счета',context,(context) => Accounts(title:"Счета")),
                       _getIconSurveys("icon/income.png", 'Доходы',context,(context) => Income(title:"Доходы")),
-                      _getIconSurveys("icon/spend.png", 'Расходы',context,(context) => Accounts(title:"Расходы")),
+                      _getIconSurveys("icon/spend.png", 'Расходы',context,(context) => Expenses(title:"Расходы")),
                     ],
                   ),
                   Row(
@@ -71,7 +73,7 @@ class StartPage extends StatelessWidget {
                     children: [
                       _getIconSurveys("icon/down.png", 'Категории\nрасходов',context,(context) => ExpenseCategory(title:"Категории расходов")),
                       _getIconSurveys("icon/up.png", 'Категории\nдоходов',context,(context) => IncomeCategory(title:"Категории доходов")),
-                      _getIconSurveys("icon/transfer.png", 'Переводы',context,(context) => Income(title:"Переводы")),
+                      _getIconSurveys("icon/transfer.png", 'Переводы',context,(context) => Transfer(title:"Переводы")),
                     ],
                   ),
                 ]))));

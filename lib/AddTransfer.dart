@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_bookkeeping/IncomeCategory.dart';
 import 'package:home_bookkeeping/db/AccountDb.dart';
+import 'package:home_bookkeeping/db/TransferDb.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
@@ -12,57 +13,43 @@ import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 import 'db/IncomeDb.dart';
 
-class AddIncome extends StatefulWidget {
-  AddIncome(
-      {Key key, this.title, this.isUpdating, this.curUserId, this.nameCategory})
+class AddTransfer extends StatefulWidget {
+  AddTransfer(
+      {Key key, this.title, this.isUpdating, this.curUserId})
       : super(key: key);
 
   final String title;
-  final String nameCategory;
   final bool isUpdating;
   final int curUserId;
 
   @override
   State<StatefulWidget> createState() {
-    return AddIncomeForm(title, isUpdating, curUserId, nameCategory);
+    return AddTransferForm(title, isUpdating, curUserId);
   }
 }
 
-class AddIncomeForm extends State<AddIncome> {
+class AddTransferForm extends State<AddTransfer> {
   String title;
 
-  AddIncomeForm(this.title, this.isUpdating, this.curUserId, this.nameCategory);
-
-  Future<List<IncomeCategoryDb>> incomeCategoryDb;
-  List<DropdownMenuItem<String>> listCategory;
+  AddTransferForm(this.title, this.isUpdating, this.curUserId);
   List<DropdownMenuItem> listAccount;
   TextEditingController controller = TextEditingController();
   int curUserId;
-  AccountDb account;
+  AccountDb accountFrom;
+  AccountDb accountTo;
   int id;
   String date;
-  String nameCategory;
   double amount;
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
   bool isUpdating;
-  String _myActivity;
 
   @override
   void initState() {
     super.initState();
-    listCategory = [];
     listAccount = [];
     dbHelper = HelperDB();
-    dbHelper.getIncomeCategory().then((row) {
-      row.map((map) {
-        return getDropDownWidgetCategory(map);
-      }).forEach((dropDownItems) {
-        listCategory.add(dropDownItems);
-      });
-      setState(() {});
-    });
 
     dbHelper.getAccounts().then((row) {
       row.map((map) {
@@ -74,12 +61,6 @@ class AddIncomeForm extends State<AddIncome> {
     });
   }
 
-  DropdownMenuItem<String> getDropDownWidgetCategory(IncomeCategoryDb map) {
-    return DropdownMenuItem<String>(
-      value: map.nameCategory,
-      child: Text(map.nameCategory),
-    );
-  }
   DropdownMenuItem getDropDownWidgetAccounts(AccountDb map) {
     return DropdownMenuItem(
       value: map,
@@ -92,14 +73,14 @@ class AddIncomeForm extends State<AddIncome> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        IncomeDb e = IncomeDb(id, date, amount, account, nameCategory);
-        dbHelper.updateIncome(e);
+        TransferDb e = TransferDb(id, date, amount, accountFrom, accountTo);
+        dbHelper.updateTransfer(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        IncomeDb e = IncomeDb(null, date, amount, account, nameCategory);
-        dbHelper.saveIncome(e);
+        TransferDb e = TransferDb(null, date, amount, accountFrom, accountTo);
+        dbHelper.saveTransfer(e);
       }
       Navigator.pop(context, true);
     }
@@ -139,9 +120,9 @@ class AddIncomeForm extends State<AddIncome> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-              Color.fromRGBO(240, 183, 153, 1),
-              Color.fromRGBO(59, 187, 203, 1)
-            ]))),
+                      Color.fromRGBO(240, 183, 153, 1),
+                      Color.fromRGBO(59, 187, 203, 1)
+                    ]))),
       ),
       body: Form(
           key: formKey,
@@ -178,9 +159,9 @@ class AddIncomeForm extends State<AddIncome> {
                     DropdownButtonFormField(
                       // value: listCategory.length == 0 ? "" : listCategory[0].value,
                       onChanged: (value) {},
-                      onSaved: (val) => account = val,
+                      onSaved: (val) => accountFrom = val,
                       validator: (val) => val == null ? 'Выберите счет' : null,
-                      decoration: InputDecoration( hintText: 'Занести на счет',
+                      decoration: InputDecoration( hintText: 'Откуда перенести средства',
                         suffixIcon: IconButton(
                           icon: Icon(Icons.clear),
                           onPressed: () {
@@ -189,22 +170,6 @@ class AddIncomeForm extends State<AddIncome> {
                         ),
                       ),
                       items: listAccount,
-                    ),
-                    DropdownButtonFormField(
-                      // value: listCategory.length == 0 ? "" : listCategory[0].value,
-                      onChanged: (value) {},
-                      onSaved: (val) => nameCategory = val,
-                      validator: (val) => val == null ? 'Выберите категорию' : null,
-                      decoration: InputDecoration(
-                        hintText: 'Категория дохода',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.clear),
-                          onPressed: () {
-                            formKey.currentState.reset();
-                          },
-                        ),
-                      ),
-                      items: listCategory,
                     ),
                     TextFormField(
                       controller: TextEditingController(
@@ -216,8 +181,23 @@ class AddIncomeForm extends State<AddIncome> {
                       ],
                       decoration: InputDecoration(labelText: 'Сумма'),
                       validator: (val) =>
-                          val.length == 0 ? 'Введите сумму дохода' : null,
+                      val.length == 0 ? 'Введите сумму дохода' : null,
                       onSaved: (val) => amount = double.parse(val),
+                    ),
+                    DropdownButtonFormField(
+                      // value: listCategory.length == 0 ? "" : listCategory[0].value,
+                      onChanged: (value) {},
+                      onSaved: (val) => accountTo = val,
+                      validator: (val) => val == null ? 'Выберите счет' : null,
+                      decoration: InputDecoration( hintText: 'Куда перенести средства',
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            formKey.currentState.reset();
+                          },
+                        ),
+                      ),
+                      items: listAccount,
                     ),
                     RaisedButton.icon(
                       onPressed: validate,

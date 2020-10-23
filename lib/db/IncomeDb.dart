@@ -5,29 +5,30 @@ import 'package:home_bookkeeping/db/IncomeCategoryDb.dart';
 
 class IncomeDb {
   int id;
-  DateTime date;
+  String date;
   double amount;
-  String account;
+  AccountDb account;
   String nameCategory;
 
   IncomeDb(this.id, this.date,this.amount,this.account, this.nameCategory);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      'id': id,
+      'id_income': id,
       'date': date,
       'amount': amount,
-      'account': account,
+      'account': account.id,
       'nameCategory': nameCategory,
     };
     return map;
   }
 
   IncomeDb.fromMap(Map<String, dynamic> map) {
-    id = map['id'];
+    id = map['id_income'];
     date = map['date'];
     amount = map['amount'];
-    account = map['account'];
+    account = new AccountDb(map['id_account'], map['name'],
+        map['balance'],  map['cartNum'], map['description']);
     nameCategory = map['nameCategory'];
   }
 }

@@ -11,14 +11,14 @@ class IncomeCategoryDb {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      'id': id,
+      'id_income_category': id,
       'nameCategory': nameCategory,
     };
     return map;
   }
 
   IncomeCategoryDb.fromMap(Map<String, dynamic> map) {
-    id = map['id'];
+    id = map['id_income_category'];
     nameCategory = map['nameCategory'];
   }
 }

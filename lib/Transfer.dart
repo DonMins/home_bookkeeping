@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/AddTransfer.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'AddIncome.dart';
 import 'AddIncomeCategory.dart';
@@ -9,25 +10,28 @@ import 'db/IncomeDb.dart';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-class Income extends StatefulWidget {
-  Income({Key key, this.title}) : super(key: key);
+
+import 'db/TransferDb.dart';
+
+class Transfer extends StatefulWidget {
+  Transfer({Key key, this.title}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return IncomeForm(title);
+    return TransferForm(title);
   }
 
   final String title;
 }
 
-class IncomeForm extends State<Income> {
-  Future<List<IncomeDb>> incomeDb;
+class TransferForm extends State<Transfer> {
+  Future<List<TransferDb>> transferDb;
   TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;
 
-  IncomeForm(this.title);
+  TransferForm(this.title);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -50,19 +54,19 @@ class IncomeForm extends State<Income> {
   }
   refreshList() {
     setState(() {
-      incomeDb = dbHelper.getIncome();
+      transferDb = dbHelper.getTransfer();
     });
   }
 
   list() {
-    return FutureBuilder<List<IncomeDb>>(
-        future: incomeDb,
+    return FutureBuilder<List<TransferDb>>(
+        future: transferDb,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
-                IncomeDb item = snapshot.data[index];
+                TransferDb item = snapshot.data[index];
                 return Card(
                     child: ListTile(
                       leading: Icon(
@@ -73,13 +77,13 @@ class IncomeForm extends State<Income> {
                       title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                        Text(item.account == null ? "" : item.account.name),
-                        Text(prettify(item.amount.toString()) + 'p',
+                            Text(item.accountFrom == null ? "" : item.accountFrom.name +
+                                (item.accountTo == null ? "" : ' -> \n'+item.accountTo.name)),
+                            Text(prettify(item.amount.toString()) + 'p',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16)),
                           ]),
-                      subtitle: Text(item.nameCategory == null ? "" : item.nameCategory
-                          + (item.date == null ? "" : "\n"+DateFormat('dd.MM.yyy в kk:mm').format(DateTime.parse(item.date)).toString())),
+                      subtitle: Text((item.date == null ? "" : DateFormat('dd.MM.yyy в kk:mm').format(DateTime.parse(item.date)).toString())),
                       trailing: new PopupMenuButton(
                         itemBuilder: (_) => <PopupMenuItem<String>>[
                           new PopupMenuItem<String>(
@@ -155,8 +159,8 @@ class IncomeForm extends State<Income> {
           Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddIncome(
-                      title: "Добавить доход", isUpdating: false)));
+                  builder: (context) => AddTransfer(
+                      title: "Добавить перевод", isUpdating: false)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

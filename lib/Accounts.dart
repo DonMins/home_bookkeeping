@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:basic_utils/basic_utils.dart';
 
 import 'AddAccounts.dart';
-import 'db/AccountDB.dart';
+import 'db/AccountDb.dart';
 import 'db/HelperDB.dart';
 
 class Accounts extends StatefulWidget {

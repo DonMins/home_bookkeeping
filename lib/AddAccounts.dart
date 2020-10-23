@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
-
-import 'Accounts.dart';
-import 'db/AccountDB.dart';
+import 'db/AccountDb.dart';
 import 'db/HelperDB.dart';
 
 class AddAccounts extends StatefulWidget {

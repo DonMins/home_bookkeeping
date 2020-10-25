@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 class AccountDb {
   int id;
@@ -8,7 +7,6 @@ class AccountDb {
   String description;
 
   AccountDb(this.id, this.name,this.balance,this.cartNum,this.description);
-  // AccountDB(this.id, this.name);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{

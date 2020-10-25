@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home_bookkeeping/IncomeCategory.dart';
 import 'package:home_bookkeeping/db/AccountDb.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
@@ -36,7 +33,6 @@ class AddIncomeForm extends State<AddIncome> {
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
   List<DropdownMenuItem<String>> listCategory;
   List<DropdownMenuItem> listAccount;
-  TextEditingController controller = TextEditingController();
   int curUserId;
   AccountDb account;
   int id;

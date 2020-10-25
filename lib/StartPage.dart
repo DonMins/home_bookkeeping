@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/Income.dart';
 import 'package:home_bookkeeping/IncomeCategory.dart';
 import 'package:home_bookkeeping/Transfer.dart';
-import 'package:home_bookkeeping/db/ExpenseCategoryDb.dart';
 
 import 'Accounts.dart';
 import 'ExpenseCategory.dart';

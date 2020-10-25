@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home_bookkeeping/IncomeCategory.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
@@ -26,10 +24,7 @@ class AddIncomeCategory extends StatefulWidget {
 class AddIncomeCategoryDb extends State<AddIncomeCategory> {
   String title;
   AddIncomeCategoryDb(this.title, this.isUpdating, this.curUserId,this.nameCategory);
-
-
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
-  TextEditingController controller = TextEditingController();
   int curUserId;
   String nameCategory;
 

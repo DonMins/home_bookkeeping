@@ -2,14 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'AddExpenses.dart';
-import 'AddIncome.dart';
-import 'AddIncomeCategory.dart';
 import 'db/ExpensesDb.dart';
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
-import 'db/IncomeDb.dart';
 import 'package:basic_utils/basic_utils.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
 class Expenses extends StatefulWidget {
@@ -25,7 +20,6 @@ class Expenses extends StatefulWidget {
 
 class ExpensesForm extends State<Expenses> {
   Future<List<ExpensesDb>> expensesDb;
-  TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;

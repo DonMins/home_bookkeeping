@@ -30,10 +30,8 @@ class AddTransfer extends StatefulWidget {
 
 class AddTransferForm extends State<AddTransfer> {
   String title;
-
   AddTransferForm(this.title, this.isUpdating, this.curUserId);
   List<DropdownMenuItem> listAccount;
-  TextEditingController controller = TextEditingController();
   int curUserId;
   AccountDb accountFrom;
   AccountDb accountTo;
@@ -67,7 +65,6 @@ class AddTransferForm extends State<AddTransfer> {
       child: Text(map.name),
     );
   }
-
 
   validate() {
     if (formKey.currentState.validate()) {

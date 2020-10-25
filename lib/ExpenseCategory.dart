@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/AddExpenseCategory.dart';
-import 'AddIncomeCategory.dart';
 import 'db/ExpenseCategoryDb.dart';
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
 
 class ExpenseCategory extends StatefulWidget {
   ExpenseCategory({Key key, this.title}) : super(key: key);
@@ -13,13 +11,11 @@ class ExpenseCategory extends StatefulWidget {
   State<StatefulWidget> createState() {
     return ExpenseCategoryForm(title);
   }
-
   final String title;
 }
 
 class ExpenseCategoryForm extends State<ExpenseCategory> {
   Future<List<ExpenseCategoryDb>> expenseCategoryDb;
-  TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;

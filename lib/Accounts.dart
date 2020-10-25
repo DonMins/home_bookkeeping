@@ -11,15 +11,14 @@ class Accounts extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _DBTestPageState();
+    return AccountsForm();
   }
 
   final String title;
 }
 
-class _DBTestPageState extends State<Accounts> {
+class AccountsForm extends State<Accounts> {
   Future<List<AccountDb>> accountDb;
-  TextEditingController controller = TextEditingController();
   String name;
   int curUserId;
   double balance;
@@ -106,24 +105,6 @@ class _DBTestPageState extends State<Accounts> {
                       }
                     },
                   ),
-
-                  // trailing: IconButton(
-                  //   icon: Icon(Icons.delete),
-                  //   onPressed: () {
-                  //     dbHelper.deleteAccount(item.id);
-                  //     refreshList();
-                  //     },
-                  // ),
-                  onTap: () async {
-                    // Object refresh = await Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => AddAccounts(
-                    //             title: "Обновить счёт",
-                    //             isUpdating: true,
-                    //             curUserId: item.id)));
-                    // if (refresh != null) refreshList();
-                  },
                 ));
               },
             );

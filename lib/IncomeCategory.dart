@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'AddIncomeCategory.dart';
-import 'AddIncomeCategory.dart';
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
@@ -18,7 +17,6 @@ class IncomeCategory extends StatefulWidget {
 
 class IncomeCategoryForm extends State<IncomeCategory> {
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
-  TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;

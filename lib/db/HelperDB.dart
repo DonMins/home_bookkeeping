@@ -135,17 +135,10 @@ class HelperDB {
     var dbClient = await db;
     account.id = await dbClient.insert(TABLE_ACCOUNT, account.toMap());
     return account;
-    /*
-    await dbClient.transaction((txn) async {
-      var query = "INSERT INTO $TABLE ($NAME) VALUES ('" + employee.name + "')";
-      return await txn.rawInsert(query);
-    });
-    */
   }
 
   Future<List<AccountDb>> getAccounts() async {
     var dbClient = await db;
-    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME]);
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_ACCOUNT");
     List<AccountDb> accounts = [];
     if (maps.length > 0) {
@@ -178,7 +171,6 @@ class HelperDB {
 
   Future<List<IncomeCategoryDb>> getIncomeCategory() async {
     var dbClient = await db;
-    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME_CATEGORY]);
     List<Map> maps =
         await dbClient.rawQuery("SELECT * FROM $TABLE_INCOME_CATEGORY");
     List<IncomeCategoryDb> incomeCategoryDb = [];
@@ -213,7 +205,6 @@ class HelperDB {
 
   Future<List<ExpenseCategoryDb>> getExpenseCategory() async {
     var dbClient = await db;
-    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME_CATEGORY]);
     List<Map> maps =
         await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSE_CATEGORY");
     List<ExpenseCategoryDb> incomeCategoryDb = [];
@@ -248,7 +239,6 @@ class HelperDB {
 
   Future<List<IncomeDb>> getIncome() async {
     var dbClient = await db;
-    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME_CATEGORY]);
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_INCOME "
         "join $TABLE_ACCOUNT on $TABLE_INCOME.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
     List<IncomeDb> incomeDb = [];
@@ -282,7 +272,6 @@ class HelperDB {
 
   Future<List<ExpensesDb>> getExpenses() async {
     var dbClient = await db;
-    // List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME_CATEGORY]);
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSES "
         "join $TABLE_ACCOUNT on $TABLE_EXPENSES.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
     List<ExpensesDb> expensesDb = [];

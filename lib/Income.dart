@@ -2,12 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'AddIncome.dart';
-import 'AddIncomeCategory.dart';
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
 import 'db/IncomeDb.dart';
 import 'package:basic_utils/basic_utils.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 class Income extends StatefulWidget {
   Income({Key key, this.title}) : super(key: key);
@@ -16,13 +13,11 @@ class Income extends StatefulWidget {
   State<StatefulWidget> createState() {
     return IncomeForm(title);
   }
-
   final String title;
 }
 
 class IncomeForm extends State<Income> {
   Future<List<IncomeDb>> incomeDb;
-  TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;

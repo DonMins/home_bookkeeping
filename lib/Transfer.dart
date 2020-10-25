@@ -2,13 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/AddTransfer.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'AddIncome.dart';
-import 'AddIncomeCategory.dart';
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
-import 'db/IncomeDb.dart';
 import 'package:basic_utils/basic_utils.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
 import 'db/TransferDb.dart';
@@ -26,7 +21,6 @@ class Transfer extends StatefulWidget {
 
 class TransferForm extends State<Transfer> {
   Future<List<TransferDb>> transferDb;
-  TextEditingController controller = TextEditingController();
   String nameCategory;
   String title;
   int curUserId;

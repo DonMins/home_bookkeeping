@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
 import 'db/AccountDb.dart';
 import 'db/HelperDB.dart';
 
@@ -34,7 +33,6 @@ class AddAccounts extends StatefulWidget {
 
 class AccountsForm extends State<AddAccounts> {
   Future<List<AccountDb>> accountDb;
-  TextEditingController controller = TextEditingController();
   String name;
   int curUserId;
   double balance;
@@ -60,10 +58,6 @@ class AccountsForm extends State<AddAccounts> {
     setState(() {
       accountDb = dbHelper.getAccounts();
     });
-  }
-
-  clearName() {
-    controller.text = '';
   }
 
   validate() {
@@ -129,21 +123,24 @@ class AccountsForm extends State<AddAccounts> {
               verticalDirection: VerticalDirection.down,
               children: <Widget>[
                 TextFormField(
-                  controller: TextEditingController(text: name == null ? "" : name),
+                  controller:
+                      TextEditingController(text: name == null ? "" : name),
                   decoration: InputDecoration(labelText: 'Название счета'),
                   validator: (val) =>
                       val.length == 0 ? 'Введите название счета' : null,
                   onSaved: (val) => name = val,
                 ),
                 TextFormField(
-                  controller: TextEditingController(text: description == null ? "" : description),
+                  controller: TextEditingController(
+                      text: description == null ? "" : description),
                   decoration: InputDecoration(labelText: 'Описание'),
                   validator: (val) =>
                       val.length == 0 ? 'Введите описание' : null,
                   onSaved: (val) => description = val,
                 ),
                 TextFormField(
-                  controller: TextEditingController(text: cartNum == null ? "" : cartNum),
+                  controller: TextEditingController(
+                      text: cartNum == null ? "" : cartNum),
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     WhitelistingTextInputFormatter.digitsOnly
@@ -154,7 +151,8 @@ class AccountsForm extends State<AddAccounts> {
                   onSaved: (val) => cartNum = val,
                 ),
                 TextFormField(
-                  controller: TextEditingController(text: balance == null ? "" : balance.toString()),
+                  controller: TextEditingController(
+                      text: balance == null ? "" : balance.toString()),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(

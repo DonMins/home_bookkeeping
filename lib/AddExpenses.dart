@@ -1,18 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home_bookkeeping/IncomeCategory.dart';
 import 'package:home_bookkeeping/db/AccountDb.dart';
 import 'package:home_bookkeeping/db/ExpenseCategoryDb.dart';
 import 'package:home_bookkeeping/db/ExpensesDb.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
-import 'db/IncomeDb.dart';
+
 
 class AddExpenses extends StatefulWidget {
   AddExpenses(
@@ -32,13 +28,10 @@ class AddExpenses extends StatefulWidget {
 
 class AddExpensesForm extends State<AddExpenses> {
   String title;
-
   AddExpensesForm(this.title, this.isUpdating, this.curUserId, this.nameCategory);
-
   Future<List<ExpenseCategoryDb>> expensesCategoryDb;
   List<DropdownMenuItem<String>> listCategory;
   List<DropdownMenuItem> listAccount;
-  TextEditingController controller = TextEditingController();
   int curUserId;
   AccountDb account;
   int id;
@@ -49,7 +42,6 @@ class AddExpensesForm extends State<AddExpenses> {
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
   bool isUpdating;
-  String _myActivity;
 
   @override
   void initState() {

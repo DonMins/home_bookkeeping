@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:home_bookkeeping/db/AccountDb.dart';
-import 'package:home_bookkeeping/db/IncomeCategoryDb.dart';
 
 class ExpensesDb {
   int id;
@@ -10,7 +7,7 @@ class ExpensesDb {
   AccountDb account;
   String nameCategory;
 
-  ExpensesDb(this.id, this.date,this.amount,this.account, this.nameCategory);
+  ExpensesDb(this.id, this.date, this.amount, this.account, this.nameCategory);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -27,8 +24,8 @@ class ExpensesDb {
     id = map['id_expenses'];
     date = map['date'];
     amount = map['amount'];
-    account = new AccountDb(map['id_account'], map['name'],
-        map['balance'],  map['cartNum'], map['description']);
+    account = new AccountDb(map['id_account'], map['name'], map['balance'],
+        map['cartNum'], map['description']);
     nameCategory = map['nameCategory'];
   }
 }

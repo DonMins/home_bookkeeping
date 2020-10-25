@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home_bookkeeping/IncomeCategory.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'db/ExpenseCategoryDb.dart';
 import 'db/HelperDB.dart';
-import 'db/IncomeCategoryDb.dart';
 
 class AddExpenseCategory extends StatefulWidget {
-  AddExpenseCategory({Key key, this.title, this.isUpdating, this.curUserId,this.nameCategory})
+  AddExpenseCategory(
+      {Key key, this.title, this.isUpdating, this.curUserId, this.nameCategory})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return AddExpenseCategoryDb(title, isUpdating, curUserId,nameCategory);
+    return AddExpenseCategoryDb(title, isUpdating, curUserId, nameCategory);
   }
 
   final String title;
@@ -26,10 +24,10 @@ class AddExpenseCategory extends StatefulWidget {
 class AddExpenseCategoryDb extends State<AddExpenseCategory> {
   String title;
 
-  AddExpenseCategoryDb(this.title, this.isUpdating, this.curUserId,this.nameCategory);
+  AddExpenseCategoryDb(
+      this.title, this.isUpdating, this.curUserId, this.nameCategory);
 
   Future<List<ExpenseCategoryDb>> expenseCategoryDb;
-  TextEditingController controller = TextEditingController();
   int curUserId;
   String nameCategory;
 
@@ -94,9 +92,9 @@ class AddExpenseCategoryDb extends State<AddExpenseCategory> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      Color.fromRGBO(240, 183, 153, 1),
-                      Color.fromRGBO(59, 187, 203, 1)
-                    ]))),
+              Color.fromRGBO(240, 183, 153, 1),
+              Color.fromRGBO(59, 187, 203, 1)
+            ]))),
       ),
       body: Form(
           key: formKey,
@@ -108,9 +106,11 @@ class AddExpenseCategoryDb extends State<AddExpenseCategory> {
                   verticalDirection: VerticalDirection.down,
                   children: <Widget>[
                     TextFormField(
-                        controller: TextEditingController(text: nameCategory == null ? "" : nameCategory),
+                        controller: TextEditingController(
+                            text: nameCategory == null ? "" : nameCategory),
                         keyboardType: TextInputType.text,
-                        decoration:InputDecoration(labelText: 'Название категории'),
+                        decoration:
+                            InputDecoration(labelText: 'Название категории'),
                         validator: (val) => val.length == 0
                             ? 'Введите название категории'
                             : null,

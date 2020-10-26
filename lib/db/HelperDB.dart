@@ -48,7 +48,7 @@ class HelperDB {
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, DB_NAME);
-    await deleteDatabase(path);
+    //await deleteDatabase(path);
 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;

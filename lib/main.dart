@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'BaseAuth.dart';
+import 'RootPage.dart';
 import 'StartPage.dart';
 
 void main() {
@@ -14,7 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: StartPage(title: 'Домашняя бухгалтерия'),
+      // home: StartPage(title: 'Домашняя бухгалтерия'),
+      home: new RootPage(auth: new Auth()),
     );
   }
 }

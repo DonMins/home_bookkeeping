@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:home_bookkeeping/db/ExpensesDb.dart';
 import 'package:home_bookkeeping/db/IncomeDb.dart';
 import 'package:home_bookkeeping/db/TransferDb.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,6 +18,7 @@ class HelperDB {
   static const String ID_INCOME = 'id_income';
   static const String ID_EXPENSES = 'id_expenses';
   static const String ID_TRANSFER = 'id_transfer';
+  static const String ID_USER = 'id_user';
   static const String ID_INCOME_CATEGORY = 'id_income_category';
   static const String ID_EXPENSE_CATEGORY = 'id_expense_category';
   static const String NAME = 'name';
@@ -34,14 +36,21 @@ class HelperDB {
   static const String TABLE_INCOME = 'income';
   static const String TABLE_TRANSFER = 'transfer';
   static const String TABLE_EXPENSES = 'expenses';
+  static const String TABLE_USERS = 'users';
+  static const String EMAIL = 'email';
+  static const String PASSWORD = 'password';
   static const String TABLE_EXPENSE_CATEGORY = 'expense_category ';
-  static const String DB_NAME = 'home_bookkeeping.db';
+  static const String DB_NAME = 'home_bookkeeping2.db';
 
   Future<Database> get db async {
     if (_db != null) {
       return _db;
     }
     _db = await initDb();
+    return _db;
+  }
+
+  Database getDatabase(){
     return _db;
   }
 
@@ -65,6 +74,11 @@ class HelperDB {
 
     await db.execute(
         "CREATE TABLE $TABLE_INCOME_CATEGORY ($ID_INCOME_CATEGORY INTEGER PRIMARY KEY, $NAME_CATEGORY TEXT)");
+
+    await db.execute("CREATE TABLE $TABLE_USERS ($ID_USER INTEGER PRIMARY KEY,"
+        " $EMAIL TEXT,"
+        " $PASSWORD TEXT"
+        ")");
 
     await db.execute(
         "CREATE TABLE $TABLE_EXPENSE_CATEGORY ($ID_EXPENSE_CATEGORY INTEGER PRIMARY KEY, $NAME_CATEGORY TEXT)");
@@ -129,6 +143,9 @@ class HelperDB {
         "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Медицина');");
     await db.rawInsert(
         "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Продукты питания');");
+
+    await db.rawInsert(
+        "INSERT INTO $TABLE_USERS ($EMAIL,$PASSWORD) VALUES ('2',2);");
   }
 
   Future<AccountDb> saveAccount(AccountDb account) async {
@@ -351,5 +368,17 @@ class HelperDB {
   Future close() async {
     var dbClient = await db;
     dbClient.close();
+  }
+
+  Future<UsersDb> getUserByEmailAndPassword(
+      String email, String password) async {
+    var dbClient = await db;
+    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSES "
+        "join $TABLE_ACCOUNT on $TABLE_EXPENSES.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
+    UsersDb user = new UsersDb(-1, "", "");
+    if (maps.length > 0) {
+      user = UsersDb.fromMap(maps[0]);
+    }
+    return user;
   }
 }

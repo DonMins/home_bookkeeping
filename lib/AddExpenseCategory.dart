@@ -1,35 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 
 import 'db/ExpenseCategoryDb.dart';
 import 'db/HelperDB.dart';
 
 class AddExpenseCategory extends StatefulWidget {
   AddExpenseCategory(
-      {Key key, this.title, this.isUpdating, this.curUserId, this.nameCategory})
+      {Key key, this.title, this.isUpdating, this.accountId, this.nameCategory,this.user})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return AddExpenseCategoryDb(title, isUpdating, curUserId, nameCategory);
+    return AddExpenseCategoryDb(title, isUpdating, accountId, nameCategory,user);
   }
 
   final String title;
   final String nameCategory;
   final bool isUpdating;
-  final int curUserId;
+  final int accountId;
+  final UsersDb user;
 }
 
 class AddExpenseCategoryDb extends State<AddExpenseCategory> {
   String title;
 
   AddExpenseCategoryDb(
-      this.title, this.isUpdating, this.curUserId, this.nameCategory);
+      this.title, this.isUpdating, this.accountId, this.nameCategory,this.user);
 
   Future<List<ExpenseCategoryDb>> expenseCategoryDb;
-  int curUserId;
+  int accountId;
   String nameCategory;
+  UsersDb user;
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -45,13 +48,13 @@ class AddExpenseCategoryDb extends State<AddExpenseCategory> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        ExpenseCategoryDb e = ExpenseCategoryDb(curUserId, nameCategory);
+        ExpenseCategoryDb e = ExpenseCategoryDb(accountId, nameCategory,user);
         dbHelper.updateExpenseCategory(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        ExpenseCategoryDb e = ExpenseCategoryDb(null, nameCategory);
+        ExpenseCategoryDb e = ExpenseCategoryDb(null, nameCategory,user);
         dbHelper.saveExpenseCategory(e);
       }
       Navigator.pop(context, true);

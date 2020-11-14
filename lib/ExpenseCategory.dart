@@ -1,26 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/AddExpenseCategory.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'db/ExpenseCategoryDb.dart';
 import 'db/HelperDB.dart';
 
 class ExpenseCategory extends StatefulWidget {
-  ExpenseCategory({Key key, this.title}) : super(key: key);
+  ExpenseCategory({Key key, this.title,this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return ExpenseCategoryForm(title);
+    return ExpenseCategoryForm(title,user);
   }
   final String title;
+  final UsersDb user;
+
 }
 
 class ExpenseCategoryForm extends State<ExpenseCategory> {
   Future<List<ExpenseCategoryDb>> expenseCategoryDb;
   String nameCategory;
   String title;
-  int curUserId;
+  int accountId;
+  UsersDb user;
 
-  ExpenseCategoryForm(this.title);
+  ExpenseCategoryForm(this.title,this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -36,7 +40,7 @@ class ExpenseCategoryForm extends State<ExpenseCategory> {
 
   refreshList() {
     setState(() {
-      expenseCategoryDb = dbHelper.getExpenseCategory();
+      expenseCategoryDb = dbHelper.getExpenseCategory(user);
     });
   }
 
@@ -65,7 +69,7 @@ class ExpenseCategoryForm extends State<ExpenseCategory> {
                             builder: (context) => AddExpenseCategory(
                                 title: "Обновить категорию",
                                 isUpdating: true,
-                                curUserId: item.id, nameCategory:item.nameCategory)));
+                                accountId: item.id, nameCategory:item.nameCategory)));
                     if (refresh != null) refreshList();
                   },
                 );
@@ -122,7 +126,7 @@ class ExpenseCategoryForm extends State<ExpenseCategory> {
               context,
               MaterialPageRoute(
                   builder: (context) => AddExpenseCategory(
-                      title: "Добавить категорию", isUpdating: false)));
+                      title: "Добавить категорию", isUpdating: false,user:user)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

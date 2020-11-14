@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'AddExpenses.dart';
 import 'db/ExpensesDb.dart';
@@ -8,23 +9,25 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:intl/intl.dart';
 
 class Expenses extends StatefulWidget {
-  Expenses({Key key, this.title}) : super(key: key);
+  Expenses({Key key, this.title,this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return ExpensesForm(title);
+    return ExpensesForm(title,user);
   }
 
   final String title;
+  final UsersDb user;
 }
 
 class ExpensesForm extends State<Expenses> {
   Future<List<ExpensesDb>> expensesDb;
   String nameCategory;
   String title;
-  int curUserId;
+  UsersDb user;
+  int accountId;
 
-  ExpensesForm(this.title);
+  ExpensesForm(this.title,this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -47,7 +50,7 @@ class ExpensesForm extends State<Expenses> {
   }
   refreshList() {
     setState(() {
-      expensesDb = dbHelper.getExpenses();
+      expensesDb = dbHelper.getExpenses(user);
     });
   }
 
@@ -153,7 +156,7 @@ class ExpensesForm extends State<Expenses> {
               context,
               MaterialPageRoute(
                   builder: (context) => AddExpenses(
-                      title: "Добавить расход", isUpdating: false)));
+                      title: "Добавить расход", isUpdating: false,user:user)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

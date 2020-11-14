@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:io';
 import 'package:home_bookkeeping/db/ExpensesDb.dart';
 import 'package:home_bookkeeping/db/IncomeDb.dart';
 import 'package:home_bookkeeping/db/TransferDb.dart';
 import 'package:home_bookkeeping/db/Users.dart';
+import 'package:kinfolk/kinfolk.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:http/http.dart' as http;
 import 'AccountDb.dart';
 import 'ExpenseCategoryDb.dart';
 import 'IncomeCategoryDb.dart';
@@ -18,7 +21,7 @@ class HelperDB {
   static const String ID_INCOME = 'id_income';
   static const String ID_EXPENSES = 'id_expenses';
   static const String ID_TRANSFER = 'id_transfer';
-  static const String ID_USER = 'id_user';
+  static const String ID_USER = 'user_id';
   static const String ID_INCOME_CATEGORY = 'id_income_category';
   static const String ID_EXPENSE_CATEGORY = 'id_expense_category';
   static const String NAME = 'name';
@@ -37,7 +40,7 @@ class HelperDB {
   static const String TABLE_TRANSFER = 'transfer';
   static const String TABLE_EXPENSES = 'expenses';
   static const String TABLE_USERS = 'users';
-  static const String EMAIL = 'email';
+  static const String LOGIN = 'login';
   static const String PASSWORD = 'password';
   static const String TABLE_EXPENSE_CATEGORY = 'expense_category ';
   static const String DB_NAME = 'home_bookkeeping2.db';
@@ -50,14 +53,14 @@ class HelperDB {
     return _db;
   }
 
-  Database getDatabase(){
+  Database getDatabase() {
     return _db;
   }
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, DB_NAME);
-    //await deleteDatabase(path);
+    await deleteDatabase(path);
 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
@@ -67,21 +70,31 @@ class HelperDB {
     await db
         .execute("CREATE TABLE $TABLE_ACCOUNT ($ID_ACCOUNT INTEGER PRIMARY KEY,"
             " $BALANCE REAL,"
+            " $ID_USER INTEGER,"
             " $CART_NUM TEXT,"
             " $DESCRIPTION TEXT,"
-            " $NAME TEXT"
+            " $NAME TEXT,"
+            "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER)"
             ")");
 
-    await db.execute(
-        "CREATE TABLE $TABLE_INCOME_CATEGORY ($ID_INCOME_CATEGORY INTEGER PRIMARY KEY, $NAME_CATEGORY TEXT)");
+    await db.execute("CREATE TABLE $TABLE_INCOME_CATEGORY ("
+        "$ID_INCOME_CATEGORY INTEGER PRIMARY KEY,"
+        " $NAME_CATEGORY TEXT,"
+        " $ID_USER INTEGER,"
+        "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER)"
+        ")");
 
     await db.execute("CREATE TABLE $TABLE_USERS ($ID_USER INTEGER PRIMARY KEY,"
-        " $EMAIL TEXT,"
+        " $LOGIN TEXT UNIQUE,"
         " $PASSWORD TEXT"
         ")");
 
     await db.execute(
-        "CREATE TABLE $TABLE_EXPENSE_CATEGORY ($ID_EXPENSE_CATEGORY INTEGER PRIMARY KEY, $NAME_CATEGORY TEXT)");
+        "CREATE TABLE $TABLE_EXPENSE_CATEGORY ($ID_EXPENSE_CATEGORY INTEGER PRIMARY KEY, "
+        "$NAME_CATEGORY TEXT,"
+        " $ID_USER INTEGER,"
+        "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER)"
+        ")");
 
     await db
         .execute("CREATE TABLE $TABLE_INCOME ($ID_INCOME INTEGER PRIMARY KEY, "
@@ -89,6 +102,8 @@ class HelperDB {
             "$ACCOUNT INTEGER,"
             "$AMOUNT REAL,"
             "$DATE DATETIME,"
+            "$ID_USER INTEGER,"
+            "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER),"
             "FOREIGN KEY ($ACCOUNT) REFERENCES $TABLE_ACCOUNT ($ID_ACCOUNT)"
             ")");
 
@@ -98,6 +113,8 @@ class HelperDB {
         "$ACCOUNT INTEGER,"
         "$AMOUNT REAL,"
         "$DATE DATETIME,"
+        " $ID_USER INTEGER,"
+        "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER),"
         "FOREIGN KEY ($ACCOUNT) REFERENCES $TABLE_ACCOUNT ($ID_ACCOUNT)"
         ")");
 
@@ -107,45 +124,49 @@ class HelperDB {
         "$ACCOUNT_TO INTEGER,"
         "$AMOUNT REAL,"
         "$DATE DATETIME,"
+        "$ID_USER INTEGER,"
+        "FOREIGN KEY ($ID_USER) REFERENCES $TABLE_USERS ($ID_USER)"
         "FOREIGN KEY ($ACCOUNT_FROM) REFERENCES $TABLE_ACCOUNT ($ID_ACCOUNT),"
         "FOREIGN KEY ($ACCOUNT_TO) REFERENCES $TABLE_ACCOUNT ($ID_ACCOUNT)"
         ")");
 
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Зарплата');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Зарплата',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Пенсия');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Пенсия',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Лотерея');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Лотерея',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Подарок');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Подарок',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Находка');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Находка',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY) VALUES ('Продажа');");
+        "INSERT INTO $TABLE_INCOME_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Продажа',0);");
 
     await db.rawInsert(
-        "INSERT INTO $TABLE_ACCOUNT ($BALANCE,$CART_NUM,$DESCRIPTION, $NAME) "
-        "VALUES (40000,'56345634534634','Счет семьи', 'Общий счет');");
+        "INSERT INTO $TABLE_ACCOUNT ($BALANCE,$CART_NUM,$DESCRIPTION, $NAME,$ID_USER) "
+        "VALUES (40000,'56345634534634','Счет семьи', 'Общий счет',1);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_ACCOUNT ($BALANCE,$CART_NUM,$DESCRIPTION, $NAME) "
-        "VALUES (400000,'56232323423','Счет для накоплений', 'Накопительный');");
+        "INSERT INTO $TABLE_ACCOUNT ($BALANCE,$CART_NUM,$DESCRIPTION, $NAME,$ID_USER) "
+        "VALUES (400000,'56232323423','Счет для накоплений', 'Накопительный',1);");
 
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Автомобиль');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Автомобиль',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Дом');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Дом',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Одежда');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Одежда',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Развлечения');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Развлечения',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Медицина');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Медицина',0);");
     await db.rawInsert(
-        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY) VALUES ('Продукты питания');");
+        "INSERT INTO $TABLE_EXPENSE_CATEGORY ($NAME_CATEGORY,$ID_USER) VALUES ('Продукты питания',0);");
 
     await db.rawInsert(
-        "INSERT INTO $TABLE_USERS ($EMAIL,$PASSWORD) VALUES ('2',2);");
+        "INSERT INTO $TABLE_USERS ($LOGIN,$PASSWORD) VALUES ('2','2');");
+    await db.rawInsert(
+        "INSERT INTO $TABLE_USERS ($LOGIN,$PASSWORD) VALUES ('1','1');");
   }
 
   Future<AccountDb> saveAccount(AccountDb account) async {
@@ -154,15 +175,23 @@ class HelperDB {
     return account;
   }
 
-  Future<List<AccountDb>> getAccounts() async {
+  Future<List<AccountDb>> getAccounts(UsersDb user) async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_ACCOUNT");
+    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_ACCOUNT where $ID_USER=" + user.id.toString());
     List<AccountDb> accounts = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
         accounts.add(AccountDb.fromMap(maps[i]));
       }
     }
+    var response = await http.get(
+        Uri.encodeFull("https://jsonplaceholder.typicode.com/posts"),
+        headers: {
+          "Accept": "application/json"
+        }
+    );
+    String data = json.decode(response.body);
+    print("Слова с сервера" + data);
     return accounts;
   }
 
@@ -186,10 +215,11 @@ class HelperDB {
     return incomeCategoryDb;
   }
 
-  Future<List<IncomeCategoryDb>> getIncomeCategory() async {
+  Future<List<IncomeCategoryDb>> getIncomeCategory(UsersDb user) async {
     var dbClient = await db;
-    List<Map> maps =
-        await dbClient.rawQuery("SELECT * FROM $TABLE_INCOME_CATEGORY");
+    List<Map> maps = await dbClient.rawQuery(
+        "SELECT * FROM $TABLE_INCOME_CATEGORY where $ID_USER=" +
+            user.id.toString()+" or $ID_USER=0");
     List<IncomeCategoryDb> incomeCategoryDb = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -220,10 +250,11 @@ class HelperDB {
     return expenseCategory;
   }
 
-  Future<List<ExpenseCategoryDb>> getExpenseCategory() async {
+  Future<List<ExpenseCategoryDb>> getExpenseCategory(UsersDb user) async {
     var dbClient = await db;
     List<Map> maps =
-        await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSE_CATEGORY");
+        await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSE_CATEGORY where $ID_USER=" +
+            user.id.toString()+" or $ID_USER=0");
     List<ExpenseCategoryDb> incomeCategoryDb = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -254,10 +285,11 @@ class HelperDB {
     return incomeDb;
   }
 
-  Future<List<IncomeDb>> getIncome() async {
+  Future<List<IncomeDb>> getIncome(UsersDb user) async {
     var dbClient = await db;
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_INCOME "
-        "join $TABLE_ACCOUNT on $TABLE_INCOME.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
+        "join $TABLE_ACCOUNT on $TABLE_INCOME.account = $TABLE_ACCOUNT.$ID_ACCOUNT where $TABLE_ACCOUNT.$ID_USER=" +
+        user.id.toString());
     List<IncomeDb> incomeDb = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -287,10 +319,11 @@ class HelperDB {
     return expensesDb;
   }
 
-  Future<List<ExpensesDb>> getExpenses() async {
+  Future<List<ExpensesDb>> getExpenses(UsersDb user) async {
     var dbClient = await db;
     List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSES "
-        "join $TABLE_ACCOUNT on $TABLE_EXPENSES.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
+        "join $TABLE_ACCOUNT on $TABLE_EXPENSES.account = $TABLE_ACCOUNT.$ID_ACCOUNT where "
+        "$TABLE_ACCOUNT.$ID_USER=" + user.id.toString());
     List<ExpensesDb> expensesDb = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -324,7 +357,7 @@ class HelperDB {
     return transferDb;
   }
 
-  Future<List<TransferDb>> getTransfer() async {
+  Future<List<TransferDb>> getTransfer(UsersDb user) async {
     var dbClient = await db;
     List<Map> maps = await dbClient.rawQuery("SELECT "
         "$TABLE_TRANSFER.id_transfer,"
@@ -342,8 +375,9 @@ class HelperDB {
         "ac2.description as description_accountTO "
         "FROM $TABLE_TRANSFER "
         "join $TABLE_ACCOUNT ac1 on $TABLE_TRANSFER.$ACCOUNT_FROM  = ac1.$ID_ACCOUNT "
-        "join $TABLE_ACCOUNT ac2 on $TABLE_TRANSFER.$ACCOUNT_TO  = ac2.$ID_ACCOUNT"
-        "");
+        "join $TABLE_ACCOUNT ac2 on $TABLE_TRANSFER.$ACCOUNT_TO  = ac2.$ID_ACCOUNT "
+        "where ac1.$ID_USER=" +
+        user.id.toString());
     List<TransferDb> transferDb = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -371,10 +405,13 @@ class HelperDB {
   }
 
   Future<UsersDb> getUserByEmailAndPassword(
-      String email, String password) async {
+      String login, String password) async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_EXPENSES "
-        "join $TABLE_ACCOUNT on $TABLE_EXPENSES.account = $TABLE_ACCOUNT.$ID_ACCOUNT");
+    List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE_USERS "
+            "where $LOGIN=" +
+        login +
+        " and $PASSWORD=" +
+        password);
     UsersDb user = new UsersDb(-1, "", "");
     if (maps.length > 0) {
       user = UsersDb.fromMap(maps[0]);

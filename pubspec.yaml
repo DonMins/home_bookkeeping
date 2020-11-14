@@ -29,6 +29,7 @@ dependencies:
   build_verify: ^1.1.0
   basic_utils: ^2.7.0-rc.1
   rflutter_alert: ^1.1.0
+  kinfolk: ^0.0.4
 
   datetime_picker_formfield: ^1.0.0
   dropdown_formfield: ^0.1.3

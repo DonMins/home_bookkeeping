@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'AddIncome.dart';
 import 'db/HelperDB.dart';
@@ -7,22 +8,24 @@ import 'db/IncomeDb.dart';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:intl/intl.dart';
 class Income extends StatefulWidget {
-  Income({Key key, this.title}) : super(key: key);
+  Income({Key key, this.title,this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return IncomeForm(title);
+    return IncomeForm(title,user);
   }
   final String title;
+  final UsersDb user;
 }
 
 class IncomeForm extends State<Income> {
   Future<List<IncomeDb>> incomeDb;
   String nameCategory;
   String title;
-  int curUserId;
+  int accountId;
+  UsersDb user;
 
-  IncomeForm(this.title);
+  IncomeForm(this.title,this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -45,7 +48,7 @@ class IncomeForm extends State<Income> {
   }
   refreshList() {
     setState(() {
-      incomeDb = dbHelper.getIncome();
+      incomeDb = dbHelper.getIncome(user);
     });
   }
 
@@ -151,7 +154,7 @@ class IncomeForm extends State<Income> {
               context,
               MaterialPageRoute(
                   builder: (context) => AddIncome(
-                      title: "Добавить доход", isUpdating: false)));
+                      title: "Добавить доход", isUpdating: false,user:user)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

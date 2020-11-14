@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'db/AccountDb.dart';
 import 'db/HelperDB.dart';
 
@@ -9,39 +10,42 @@ class AddAccounts extends StatefulWidget {
       {Key key,
       this.title,
       this.isUpdating,
-      this.curUserId,
+      this.accountId,
       this.balance,
       this.description,
       this.name,
-      this.cartNum})
+      this.cartNum,
+      this.user })
       : super(key: key);
 
   final String title;
   String name;
-  int curUserId;
+  int accountId;
   double balance;
   String cartNum;
   String description;
   bool isUpdating;
+  UsersDb user ;
 
   @override
   State<StatefulWidget> createState() {
-    return AccountsForm(
-        title, name, curUserId, balance, cartNum, description, isUpdating);
+    return AccountsForm(title, name, accountId, balance, cartNum, description,
+        isUpdating, user);
   }
 }
 
 class AccountsForm extends State<AddAccounts> {
   Future<List<AccountDb>> accountDb;
   String name;
-  int curUserId;
+  int accountId;
   double balance;
   String cartNum;
   String description;
+  UsersDb user;
   final String title;
 
-  AccountsForm(this.title, this.name, this.curUserId, this.balance,
-      this.cartNum, this.description, this.isUpdating);
+  AccountsForm(this.title, this.name, this.accountId, this.balance,
+      this.cartNum, this.description, this.isUpdating, this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -56,7 +60,7 @@ class AccountsForm extends State<AddAccounts> {
 
   refreshList() {
     setState(() {
-      accountDb = dbHelper.getAccounts();
+      accountDb = dbHelper.getAccounts(user);
     });
   }
 
@@ -64,13 +68,15 @@ class AccountsForm extends State<AddAccounts> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        AccountDb e = AccountDb(curUserId, name, balance, cartNum, description);
+        AccountDb e =
+            AccountDb(accountId, name, balance, cartNum, description, user);
         dbHelper.updateAccount(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        AccountDb e = AccountDb(null, name, balance, cartNum, description);
+        AccountDb e =
+            AccountDb(null, name, balance, cartNum, description, user);
         dbHelper.saveAccount(e);
       }
       Navigator.pop(context, true);

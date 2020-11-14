@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_bookkeeping/db/AccountDb.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:intl/intl.dart';
 
 import 'db/HelperDB.dart';
@@ -11,29 +12,31 @@ import 'db/IncomeDb.dart';
 
 class AddIncome extends StatefulWidget {
   AddIncome(
-      {Key key, this.title, this.isUpdating, this.curUserId, this.nameCategory})
+      {Key key, this.title, this.isUpdating, this.accountId, this.nameCategory,this.user})
       : super(key: key);
 
   final String title;
   final String nameCategory;
   final bool isUpdating;
-  final int curUserId;
+  final int accountId;
+  final UsersDb user;
 
   @override
   State<StatefulWidget> createState() {
-    return AddIncomeForm(title, isUpdating, curUserId, nameCategory);
+    return AddIncomeForm(title, isUpdating, accountId, nameCategory,user);
   }
 }
 
 class AddIncomeForm extends State<AddIncome> {
   String title;
+  UsersDb user;
 
-  AddIncomeForm(this.title, this.isUpdating, this.curUserId, this.nameCategory);
+  AddIncomeForm(this.title, this.isUpdating, this.accountId, this.nameCategory,this.user);
 
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
   List<DropdownMenuItem<String>> listCategory;
   List<DropdownMenuItem> listAccount;
-  int curUserId;
+  int accountId;
   AccountDb account;
   int id;
   String date;
@@ -51,7 +54,7 @@ class AddIncomeForm extends State<AddIncome> {
     listCategory = [];
     listAccount = [];
     dbHelper = HelperDB();
-    dbHelper.getIncomeCategory().then((row) {
+    dbHelper.getIncomeCategory(user).then((row) {
       row.map((map) {
         return getDropDownWidgetCategory(map);
       }).forEach((dropDownItems) {
@@ -60,7 +63,7 @@ class AddIncomeForm extends State<AddIncome> {
       setState(() {});
     });
 
-    dbHelper.getAccounts().then((row) {
+    dbHelper.getAccounts(user).then((row) {
       row.map((map) {
         return getDropDownWidgetAccounts(map);
       }).forEach((dropDownItems) {

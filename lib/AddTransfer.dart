@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:home_bookkeeping/IncomeCategory.dart';
 import 'package:home_bookkeeping/db/AccountDb.dart';
 import 'package:home_bookkeeping/db/TransferDb.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
@@ -15,28 +16,30 @@ import 'db/IncomeDb.dart';
 
 class AddTransfer extends StatefulWidget {
   AddTransfer(
-      {Key key, this.title, this.isUpdating, this.curUserId})
+      {Key key, this.title, this.isUpdating, this.accountId,this.user})
       : super(key: key);
 
   final String title;
   final bool isUpdating;
-  final int curUserId;
+  final int accountId;
+  final UsersDb user;
 
   @override
   State<StatefulWidget> createState() {
-    return AddTransferForm(title, isUpdating, curUserId);
+    return AddTransferForm(title, isUpdating, accountId,user);
   }
 }
 
 class AddTransferForm extends State<AddTransfer> {
   String title;
-  AddTransferForm(this.title, this.isUpdating, this.curUserId);
+  AddTransferForm(this.title, this.isUpdating, this.accountId,this.user);
   List<DropdownMenuItem> listAccount;
-  int curUserId;
+  int accountId;
   AccountDb accountFrom;
   AccountDb accountTo;
   int id;
   String date;
+  UsersDb user;
   double amount;
 
   final formKey = new GlobalKey<FormState>();
@@ -49,7 +52,7 @@ class AddTransferForm extends State<AddTransfer> {
     listAccount = [];
     dbHelper = HelperDB();
 
-    dbHelper.getAccounts().then((row) {
+    dbHelper.getAccounts(user).then((row) {
       row.map((map) {
         return getDropDownWidgetAccounts(map);
       }).forEach((dropDownItems) {
@@ -70,13 +73,13 @@ class AddTransferForm extends State<AddTransfer> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        TransferDb e = TransferDb(id, date, amount, accountFrom, accountTo);
+        TransferDb e = TransferDb(id, date, amount, accountFrom, accountTo,user);
         dbHelper.updateTransfer(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        TransferDb e = TransferDb(null, date, amount, accountFrom, accountTo);
+        TransferDb e = TransferDb(null, date, amount, accountFrom, accountTo,user);
         dbHelper.saveTransfer(e);
       }
       Navigator.pop(context, true);

@@ -1,27 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'AddIncomeCategory.dart';
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
 class IncomeCategory extends StatefulWidget {
-  IncomeCategory({Key key, this.title}) : super(key: key);
+  IncomeCategory({Key key, this.title,this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return IncomeCategoryForm(title);
+    return IncomeCategoryForm(title,user);
   }
 
   final String title;
+  final UsersDb user;
 }
 
 class IncomeCategoryForm extends State<IncomeCategory> {
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
   String nameCategory;
   String title;
-  int curUserId;
+  int accountId;
+  UsersDb user;
 
-  IncomeCategoryForm(this.title);
+  IncomeCategoryForm(this.title,this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -37,7 +40,7 @@ class IncomeCategoryForm extends State<IncomeCategory> {
 
   refreshList() {
     setState(() {
-      incomeCategoryDb = dbHelper.getIncomeCategory();
+      incomeCategoryDb = dbHelper.getIncomeCategory(user);
     });
   }
 
@@ -66,7 +69,7 @@ class IncomeCategoryForm extends State<IncomeCategory> {
                             builder: (context) => AddIncomeCategory(
                                 title: "Обновить категорию",
                                 isUpdating: true,
-                                curUserId: item.id, nameCategory:item.nameCategory)));
+                                accountId: item.id, nameCategory:item.nameCategory,user:user)));
                     if (refresh != null) refreshList();
                   },
                 );
@@ -123,7 +126,7 @@ class IncomeCategoryForm extends State<IncomeCategory> {
               context,
               MaterialPageRoute(
                   builder: (context) => AddIncomeCategory(
-                      title: "Добавить категорию", isUpdating: false)));
+                      title: "Добавить категорию", isUpdating: false,user: user,)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

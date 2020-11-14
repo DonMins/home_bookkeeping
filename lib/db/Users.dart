@@ -9,7 +9,7 @@ class UsersDb {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      'id_user': id,
+      'user_id': id,
       'login': login,
       'password': password
     };
@@ -17,7 +17,7 @@ class UsersDb {
   }
 
   UsersDb.fromMap(Map<String, dynamic> map) {
-    id = map['id_user'];
+    id = map['user_id'];
     login = map['login'];
     password = map['password'];
   }

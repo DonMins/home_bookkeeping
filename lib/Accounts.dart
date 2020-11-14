@@ -1,33 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:basic_utils/basic_utils.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 
 import 'AddAccounts.dart';
 import 'db/AccountDb.dart';
 import 'db/HelperDB.dart';
 
 class Accounts extends StatefulWidget {
-  Accounts({Key key, this.title}) : super(key: key);
+  Accounts({Key key, this.title, this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return AccountsForm();
+    return AccountsForm(user);
   }
 
   final String title;
+  final UsersDb user;
 }
 
 class AccountsForm extends State<Accounts> {
   Future<List<AccountDb>> accountDb;
   String name;
-  int curUserId;
+  int accountId;
   double balance;
   String cartNum;
   String description;
+  UsersDb user;
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
   bool isUpdating;
+  AccountsForm(this.user);
 
   @override
   void initState() {
@@ -39,7 +43,7 @@ class AccountsForm extends State<Accounts> {
 
   refreshList() {
     setState(() {
-      accountDb = dbHelper.getAccounts();
+      accountDb = dbHelper.getAccounts(user);
     });
   }
 
@@ -92,7 +96,7 @@ class AccountsForm extends State<Accounts> {
                                 builder: (context) => AddAccounts(
                                     title: "Обновить счёт",
                                     isUpdating: true,
-                                    curUserId: item.id,
+                                    accountId: item.id,
                                     balance:item.balance,
                                     description:item.description,
                                     name:item.name,
@@ -158,7 +162,7 @@ class AccountsForm extends State<Accounts> {
           Object refresh = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddAccounts(title: "Cчета",isUpdating: false,)));
+                  builder: (context) => AddAccounts(title: "Cчета",isUpdating: false, user:user)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

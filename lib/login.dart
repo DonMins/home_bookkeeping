@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 
 import 'BaseAuth.dart';
 
@@ -28,7 +29,7 @@ class _LoginSignupPageState extends State<LoginPage>{
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Flutter login demo'),
+          title: new Text('Авторизация'),
         ),
         body: Stack(
           children: <Widget>[
@@ -38,32 +39,32 @@ class _LoginSignupPageState extends State<LoginPage>{
         ));
   }
 
-  void validateAndSubmit() async {
+  validate() async {
+
     setState(() {
       _errorMessage = "";
-      _isLoading = true;
     });
 
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
       int userId = 0;
       try {
         userId = await widget.auth.signIn(_email, _password);
         print('Signed in: $userId');
 
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (userId!= 0 && userId != null) {
+        if (userId!=-1 && userId != null) {
           widget.loginCallback();
+        } else{
+          _errorMessage = "Неверный логин или пароль";
+          _formKey.currentState.reset();
         }
+
       } catch (e) {
         print('Error: $e');
-        setState(() {
-          _isLoading = false;
-          _errorMessage = e.message;
-          _formKey.currentState.reset();
-        });
+        _errorMessage = "Неверный логин или пароль";
+        _formKey.currentState.reset();
       }
+    }
   }
 
   Widget showForm() {
@@ -78,8 +79,7 @@ class _LoginSignupPageState extends State<LoginPage>{
               showEmailInput(),
               showPasswordInput(),
               showPrimaryButton(),
-              // showSecondaryButton(),
-              // showErrorMessage(),
+              showErrorMessage(),
             ],
           ),
         ));
@@ -104,12 +104,12 @@ class _LoginSignupPageState extends State<LoginPage>{
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Email',
+            hintText: 'Login',
             icon: new Icon(
               Icons.mail,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? 'Login can\'t be empty' : null,
         onSaved: (value) => _email = value.trim(),
       ),
     );
@@ -144,29 +144,23 @@ class _LoginSignupPageState extends State<LoginPage>{
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
             color: Colors.blue,
-            child: new Text('Login',
+            child: new Text('Войти',
                 style: new TextStyle(fontSize: 20.0, color: Colors.white)),
-            onPressed: validateAndSubmit,
+            onPressed: validate,
           ),
         ));
   }
 
-  // void toggleFormMode() {
-  //   resetForm();
-  //   setState(() {
-  //     _isLoginForm = !_isLoginForm;
-  //   });
-  // }
-
   Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
+    if (_errorMessage.length > 0) {
       return new Text(
         _errorMessage,
+        textAlign: TextAlign.center,
         style: TextStyle(
-            fontSize: 13.0,
+            fontSize: 15.0,
             color: Colors.red,
             height: 1.0,
-            fontWeight: FontWeight.w300),
+            fontWeight: FontWeight.bold),
       );
     } else {
       return new Container(
@@ -183,7 +177,13 @@ class _LoginSignupPageState extends State<LoginPage>{
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
           radius: 48.0,
-          child: Image.asset('icon/xz.png'),
+          child: Text('Введите логин и пароль',
+            style: TextStyle(
+              fontSize: 40.0,
+              color: Colors.black,
+              height: 1.0,
+              fontWeight: FontWeight.w300),
+          ),
         ),
       ),
     );

@@ -8,8 +8,6 @@ import 'db/Users.dart';
 abstract class BaseAuth {
   Future<int> signIn(String email, String password);
 
-  Future<String> signUp(String email, String password);
-
   Future<UsersDb> getCurrentUser();
 
   Future<void> sendEmailVerification();
@@ -20,21 +18,20 @@ abstract class BaseAuth {
 }
 class Auth implements BaseAuth {
   HelperDB helper = new HelperDB();
+  Future<UsersDb> currentUser;
+
   Future<int> signIn(String email, String password) async {
     Future<UsersDb> user = helper.getUserByEmailAndPassword(email, password);
-    return 5;
-  }
-
-  Future<String> signUp(String email, String password) async {
-    return " ";
+    this.currentUser = user;
+    return user.then((value) => value.id);
   }
 
   Future<UsersDb> getCurrentUser() async {
-    return new UsersDb(0, '0', '0');
+    return this.currentUser;
   }
 
   Future<void> signOut() async {
-    return " ";
+    return ;
   }
 
   Future<void> sendEmailVerification() async {

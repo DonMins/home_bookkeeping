@@ -1,12 +1,15 @@
 
+import 'package:home_bookkeeping/db/Users.dart';
+
 class AccountDb {
   int id;
   String name;
   double balance;
   String cartNum;
   String description;
+  UsersDb user;
 
-  AccountDb(this.id, this.name,this.balance,this.cartNum,this.description);
+  AccountDb(this.id, this.name,this.balance,this.cartNum,this.description,this.user);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -15,6 +18,7 @@ class AccountDb {
       'balance': balance,
       'cartNum': cartNum,
       'description': description,
+      'user_id': user.id,
     };
     return map;
   }
@@ -25,5 +29,6 @@ class AccountDb {
     balance = map['balance'];
     cartNum = map['cartNum'];
     description = map['description'];
+    user = new UsersDb(map['user_id'], map['login'], map['password']);
   }
 }

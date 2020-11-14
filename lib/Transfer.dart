@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_bookkeeping/AddTransfer.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'db/HelperDB.dart';
 import 'package:basic_utils/basic_utils.dart';
@@ -9,23 +10,25 @@ import 'package:intl/intl.dart';
 import 'db/TransferDb.dart';
 
 class Transfer extends StatefulWidget {
-  Transfer({Key key, this.title}) : super(key: key);
+  Transfer({Key key, this.title,this.user}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return TransferForm(title);
+    return TransferForm(title,user);
   }
 
   final String title;
+  final UsersDb user;
 }
 
 class TransferForm extends State<Transfer> {
   Future<List<TransferDb>> transferDb;
   String nameCategory;
   String title;
-  int curUserId;
+  int accountId;
+  UsersDb user;
 
-  TransferForm(this.title);
+  TransferForm(this.title,this.user);
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -48,7 +51,7 @@ class TransferForm extends State<Transfer> {
   }
   refreshList() {
     setState(() {
-      transferDb = dbHelper.getTransfer();
+      transferDb = dbHelper.getTransfer(user);
     });
   }
 
@@ -154,7 +157,7 @@ class TransferForm extends State<Transfer> {
               context,
               MaterialPageRoute(
                   builder: (context) => AddTransfer(
-                      title: "Добавить перевод", isUpdating: false)));
+                      title: "Добавить перевод", isUpdating: false,user: user)));
           if (refresh != null) refreshList();
         },
         child: new Icon(Icons.add),

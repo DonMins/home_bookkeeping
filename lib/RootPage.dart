@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:home_bookkeeping/login.dart';
 
 import 'BaseAuth.dart';
@@ -17,7 +18,7 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
 
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-   int _userId;
+   UsersDb currUser;
 
   @override
   void initState() {
@@ -25,10 +26,9 @@ class _RootPageState extends State<RootPage> {
     widget.auth.getCurrentUser().then((user) {
       setState(() {
         if (user != null) {
-          _userId = user?.id;
+          currUser = user;
         }
-        authStatus =
-        user?.id == 0 ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+        authStatus = user == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
       });
     });
   }
@@ -37,7 +37,9 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     switch (authStatus) {
       case AuthStatus.NOT_DETERMINED:
-        return StartPage(title: 'Домашняя бухгалтерия');
+        return new LoginPage(
+            auth: widget.auth,
+            loginCallback: loginCallback);
         break;
       case AuthStatus.NOT_LOGGED_IN:
         return new LoginPage(
@@ -45,24 +47,14 @@ class _RootPageState extends State<RootPage> {
           loginCallback: loginCallback);
         break;
       case AuthStatus.LOGGED_IN:
-        StartPage(title: 'Домашняя бухгалтерия');
-        // if (_userId.length > 0 && _userId != null) {
-        //   return new HomePage(
-        //     userId: _userId,
-        //     auth: widget.auth,
-        //     logoutCallback: logoutCallback,
-        //   );
-        // } else
-          return StartPage(title: 'Домашняя бухгалтерия');
+        return new StartPage(title: 'Домашняя бухгалтерия',user: currUser);
         break;
-      default:
-        return StartPage(title: 'Домашняя бухгалтерия');
     }
   }
   void loginCallback() {
     widget.auth.getCurrentUser().then((user) {
       setState(() {
-        _userId = user.id;
+        currUser = user;
       });
     });
     setState(() {
@@ -73,7 +65,7 @@ class _RootPageState extends State<RootPage> {
   void logoutCallback() {
     setState(() {
       authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userId = 0;
+      currUser = new UsersDb(-1,"","");
     });
   }
 }

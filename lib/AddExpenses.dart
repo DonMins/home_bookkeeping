@@ -5,6 +5,7 @@ import 'package:home_bookkeeping/db/AccountDb.dart';
 import 'package:home_bookkeeping/db/ExpenseCategoryDb.dart';
 import 'package:home_bookkeeping/db/ExpensesDb.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 import 'package:intl/intl.dart';
 
 import 'db/HelperDB.dart';
@@ -12,28 +13,30 @@ import 'db/HelperDB.dart';
 
 class AddExpenses extends StatefulWidget {
   AddExpenses(
-      {Key key, this.title, this.isUpdating, this.curUserId, this.nameCategory})
+      {Key key, this.title, this.isUpdating, this.accountId, this.nameCategory,this.user})
       : super(key: key);
 
   final String title;
   final String nameCategory;
   final bool isUpdating;
-  final int curUserId;
+  final int accountId;
+  final UsersDb user;
 
   @override
   State<StatefulWidget> createState() {
-    return AddExpensesForm(title, isUpdating, curUserId, nameCategory);
+    return AddExpensesForm(title, isUpdating, accountId, nameCategory,user);
   }
 }
 
 class AddExpensesForm extends State<AddExpenses> {
   String title;
-  AddExpensesForm(this.title, this.isUpdating, this.curUserId, this.nameCategory);
+  AddExpensesForm(this.title, this.isUpdating, this.accountId, this.nameCategory,this.user);
   Future<List<ExpenseCategoryDb>> expensesCategoryDb;
   List<DropdownMenuItem<String>> listCategory;
   List<DropdownMenuItem> listAccount;
-  int curUserId;
+  int accountId;
   AccountDb account;
+  UsersDb user;
   int id;
   String date;
   String nameCategory;
@@ -49,7 +52,7 @@ class AddExpensesForm extends State<AddExpenses> {
     listCategory = [];
     listAccount = [];
     dbHelper = HelperDB();
-    dbHelper.getExpenseCategory().then((row) {
+    dbHelper.getExpenseCategory(user).then((row) {
       row.map((map) {
         return getDropDownWidgetCategory(map);
       }).forEach((dropDownItems) {
@@ -58,7 +61,7 @@ class AddExpensesForm extends State<AddExpenses> {
       setState(() {});
     });
 
-    dbHelper.getAccounts().then((row) {
+    dbHelper.getAccounts(user).then((row) {
       row.map((map) {
         return getDropDownWidgetAccounts(map);
       }).forEach((dropDownItems) {
@@ -86,13 +89,13 @@ class AddExpensesForm extends State<AddExpenses> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        ExpensesDb e = ExpensesDb(id, date, amount, account, nameCategory);
+        ExpensesDb e = ExpensesDb(id, date, amount, account, nameCategory,user);
         dbHelper.updateExpenses(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        ExpensesDb e = ExpensesDb(null, date, amount, account, nameCategory);
+        ExpensesDb e = ExpensesDb(null, date, amount, account, nameCategory,user);
         dbHelper.saveExpenses(e);
       }
       Navigator.pop(context, true);

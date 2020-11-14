@@ -1,32 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_bookkeeping/db/Users.dart';
 
 import 'db/HelperDB.dart';
 import 'db/IncomeCategoryDb.dart';
 
 class AddIncomeCategory extends StatefulWidget {
-  AddIncomeCategory({Key key, this.title, this.isUpdating, this.curUserId,this.nameCategory})
+  AddIncomeCategory({Key key, this.title, this.isUpdating, this.accountId,this.nameCategory,this.user})
       : super(key: key);
 
   final String title;
   final String nameCategory;
   final bool isUpdating;
-  final int curUserId;
+  final int accountId;
+  final UsersDb user;
 
   @override
   State<StatefulWidget> createState() {
-    return AddIncomeCategoryDb(title, isUpdating, curUserId,nameCategory);
+    return AddIncomeCategoryDb(title, isUpdating, accountId,nameCategory,user);
 
   }
 }
 
 class AddIncomeCategoryDb extends State<AddIncomeCategory> {
   String title;
-  AddIncomeCategoryDb(this.title, this.isUpdating, this.curUserId,this.nameCategory);
+  AddIncomeCategoryDb(this.title, this.isUpdating, this.accountId,this.nameCategory,this.user);
   Future<List<IncomeCategoryDb>> incomeCategoryDb;
-  int curUserId;
+  int accountId;
   String nameCategory;
+  UsersDb user;
 
   final formKey = new GlobalKey<FormState>();
   var dbHelper;
@@ -42,13 +45,13 @@ class AddIncomeCategoryDb extends State<AddIncomeCategory> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        IncomeCategoryDb e = IncomeCategoryDb(curUserId, nameCategory);
+        IncomeCategoryDb e = IncomeCategoryDb(accountId, nameCategory,user);
         dbHelper.updateIncomeCategory(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        IncomeCategoryDb e = IncomeCategoryDb(null, nameCategory);
+        IncomeCategoryDb e = IncomeCategoryDb(null, nameCategory,user);
         dbHelper.saveIncomeCategory(e);
       }
       Navigator.pop(context, true);

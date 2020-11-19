@@ -9,7 +9,7 @@ class IncomeDb {
   String nameCategory;
   UsersDb user;
 
-  IncomeDb(this.id, this.date, this.amount, this.account, this.nameCategory);
+  IncomeDb(this.id, this.date, this.amount, this.account, this.nameCategory,this.user);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -31,5 +31,15 @@ class IncomeDb {
     account = new AccountDb(map['id_account'], map['name'], map['balance'],
         map['cartNum'], map['description'],user);
     nameCategory = map['nameCategory'];
+  }
+
+  IncomeDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    date = map['date'];
+    amount = map['amount'];
+    user = new UsersDb(int.parse(map['user']['id']), map['user']['login'], map['user']['password']);
+    account = new AccountDb(int.parse(map['account']['id']), map['account']['name'], map['account']['balance'],
+        map['account']['cartNum'], map['account']['description'],user);
+    nameCategory = map['nameCategory']['nameCategory'];
   }
 }

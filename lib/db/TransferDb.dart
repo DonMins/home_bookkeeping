@@ -42,4 +42,15 @@ class TransferDb {
         map['cartNum_accountTo'],
         map['description_accountTO'],user);
   }
+
+  TransferDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    date = map['date'];
+    amount = map['amount'];
+    user = new UsersDb(int.parse(map['user']['id']), map['user']['login'], map['user']['password']);
+    accountFrom = new AccountDb(int.parse(map['accountFrom']['id']), map['accountFrom']['name'], map['accountFrom']['balance'],
+        map['accountFrom']['cartNum'], map['accountFrom']['description'],user);
+    accountTo = new AccountDb(int.parse(map['accounTo']['id']), map['accounTo']['name'], map['accounTo']['balance'],
+        map['accounTo']['cartNum'], map['accounTo']['description'],user);
+  }
 }

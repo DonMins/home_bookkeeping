@@ -81,34 +81,34 @@ class AccountsForm extends State<Accounts> {
                                 fontWeight: FontWeight.bold, fontSize: 16)),
                       ]),
                   subtitle: Text(item.description),
-                  trailing: new PopupMenuButton(
-                    itemBuilder: (_) => <PopupMenuItem<String>>[
-                      new PopupMenuItem<String>(
-                          child: const Text('Редактировать'), value: '0'),
-                      new PopupMenuItem<String>(
-                          child: const Text('Удалить'), value: '1'),
-                    ],
-                    onSelected: (val) async {
-                      if (val == '0') {
-                        Object refresh = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddAccounts(
-                                    title: "Обновить счёт",
-                                    isUpdating: true,
-                                    accountId: item.id,
-                                    balance:item.balance,
-                                    description:item.description,
-                                    name:item.name,
-                                    cartNum:item.cartNum)));
-                        if (refresh != null) refreshList();
-                      }
-                      if (val == '1') {
-                        dbHelper.deleteAccount(item.id);
-                        refreshList();
-                      }
-                    },
-                  ),
+                  // trailing: new PopupMenuButton(
+                  //   itemBuilder: (_) => <PopupMenuItem<String>>[
+                  //     new PopupMenuItem<String>(
+                  //         child: const Text('Редактировать'), value: '0'),
+                  //     new PopupMenuItem<String>(
+                  //         child: const Text('Удалить'), value: '1'),
+                  //   ],
+                  //   onSelected: (val) async {
+                  //     if (val == '0') {
+                  //       Object refresh = await Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (context) => AddAccounts(
+                  //                   title: "Обновить счёт",
+                  //                   isUpdating: true,
+                  //                   accountId: item.id,
+                  //                   balance:item.balance,
+                  //                   description:item.description,
+                  //                   name:item.name,
+                  //                   cartNum:item.cartNum)));
+                  //       if (refresh != null) refreshList();
+                  //     }
+                  //     if (val == '1') {
+                  //       dbHelper.deleteAccount(item.id);
+                  //       refreshList();
+                  //     }
+                  //   },
+                  // ),
                 ));
               },
             );
@@ -157,16 +157,16 @@ class AccountsForm extends State<Accounts> {
             ]))),
       ),
       body: list(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          Object refresh = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddAccounts(title: "Cчета",isUpdating: false, user:user)));
-          if (refresh != null) refreshList();
-        },
-        child: new Icon(Icons.add),
-      ),
+      // floatingActionButton: new FloatingActionButton(
+      //   onPressed: () async {
+      //     Object refresh = await Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => AddAccounts(title: "Cчета",isUpdating: false, user:user)));
+      //     if (refresh != null) refreshList();
+      //   },
+      //   child: new Icon(Icons.add),
+      // ),
     );
   }
 }

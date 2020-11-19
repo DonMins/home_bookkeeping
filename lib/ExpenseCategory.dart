@@ -55,23 +55,23 @@ class ExpenseCategoryForm extends State<ExpenseCategory> {
                 ExpenseCategoryDb item = snapshot.data[index];
                 return ListTile(
                   title: Text(item.nameCategory),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      dbHelper.deleteExpenseCategory(item.id);
-                      refreshList();
-                    },
-                  ),
-                  onTap: () async {
-                    Object refresh = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddExpenseCategory(
-                                title: "Обновить категорию",
-                                isUpdating: true,
-                                accountId: item.id, nameCategory:item.nameCategory)));
-                    if (refresh != null) refreshList();
-                  },
+                  // trailing: IconButton(
+                  //   icon: Icon(Icons.delete),
+                  //   onPressed: () {
+                  //     dbHelper.deleteExpenseCategory(item.id);
+                  //     refreshList();
+                  //   },
+                  // ),
+                  // onTap: () async {
+                  //   Object refresh = await Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (context) => AddExpenseCategory(
+                  //               title: "Обновить категорию",
+                  //               isUpdating: true,
+                  //               accountId: item.id, nameCategory:item.nameCategory)));
+                  //   if (refresh != null) refreshList();
+                  // },
                 );
               },
             );
@@ -120,17 +120,17 @@ class ExpenseCategoryForm extends State<ExpenseCategory> {
             ]))),
       ),
       body: list(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          Object refresh = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddExpenseCategory(
-                      title: "Добавить категорию", isUpdating: false,user:user)));
-          if (refresh != null) refreshList();
-        },
-        child: new Icon(Icons.add),
-      ),
+      // floatingActionButton: new FloatingActionButton(
+      //   onPressed: () async {
+      //     Object refresh = await Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => AddExpenseCategory(
+      //                 title: "Добавить категорию", isUpdating: false,user:user)));
+      //     if (refresh != null) refreshList();
+      //   },
+      //   child: new Icon(Icons.add),
+      // ),
     );
   }
 }

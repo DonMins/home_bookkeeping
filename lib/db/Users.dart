@@ -21,4 +21,10 @@ class UsersDb {
     login = map['login'];
     password = map['password'];
   }
+
+  UsersDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    login = map['login'];
+    password = map['password'];
+  }
 }

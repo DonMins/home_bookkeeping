@@ -32,6 +32,15 @@ class ExpensesDb {
     account = new AccountDb(map['id_account'], map['name'], map['balance'],
         map['cartNum'], map['description'],user);
     nameCategory = map['nameCategory'];
+  }
 
+  ExpensesDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    date = map['date'];
+    amount = map['amount'];
+    user = new UsersDb(int.parse(map['user']['id']), map['user']['login'], map['user']['password']);
+    account = new AccountDb(int.parse(map['account']['id']), map['account']['name'], map['account']['balance'],
+        map['account']['cartNum'], map['account']['description'],user);
+    nameCategory = map['nameCategory']['nameCategory'];
   }
 }

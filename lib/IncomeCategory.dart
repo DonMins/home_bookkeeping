@@ -55,23 +55,23 @@ class IncomeCategoryForm extends State<IncomeCategory> {
                 IncomeCategoryDb item = snapshot.data[index];
                 return ListTile(
                     title: Text(item.nameCategory),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        dbHelper.deleteIncomeCategory(item.id);
-                        refreshList();
-                      },
-                    ),
-                  onTap: () async {
-                    Object refresh = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddIncomeCategory(
-                                title: "Обновить категорию",
-                                isUpdating: true,
-                                accountId: item.id, nameCategory:item.nameCategory,user:user)));
-                    if (refresh != null) refreshList();
-                  },
+                    // trailing: IconButton(
+                    //   icon: Icon(Icons.delete),
+                    //   onPressed: () {
+                    //     dbHelper.deleteIncomeCategory(item.id);
+                    //     refreshList();
+                    //   },
+                    // ),
+                  // onTap: () async {
+                  //   Object refresh = await Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (context) => AddIncomeCategory(
+                  //               title: "Обновить категорию",
+                  //               isUpdating: true,
+                  //               accountId: item.id, nameCategory:item.nameCategory,user:user)));
+                  //   if (refresh != null) refreshList();
+                  // },
                 );
               },
             );
@@ -120,17 +120,17 @@ class IncomeCategoryForm extends State<IncomeCategory> {
             ]))),
       ),
       body: list(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          Object refresh = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddIncomeCategory(
-                      title: "Добавить категорию", isUpdating: false,user: user,)));
-          if (refresh != null) refreshList();
-        },
-        child: new Icon(Icons.add),
-      ),
+      // floatingActionButton: new FloatingActionButton(
+      //   onPressed: () async {
+      //     Object refresh = await Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => AddIncomeCategory(
+      //                 title: "Добавить категорию", isUpdating: false,user: user,)));
+      //     if (refresh != null) refreshList();
+      //   },
+      //   child: new Icon(Icons.add),
+      // ),
     );
   }
 }

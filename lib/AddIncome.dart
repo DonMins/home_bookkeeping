@@ -91,13 +91,13 @@ class AddIncomeForm extends State<AddIncome> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       if (isUpdating) {
-        IncomeDb e = IncomeDb(id, date, amount, account, nameCategory);
+        IncomeDb e = IncomeDb(id, date, amount, account, nameCategory,user);
         dbHelper.updateIncome(e);
         setState(() {
           isUpdating = false;
         });
       } else {
-        IncomeDb e = IncomeDb(null, date, amount, account, nameCategory);
+        IncomeDb e = IncomeDb(null, date, amount, account, nameCategory,user);
         dbHelper.saveIncome(e);
       }
       Navigator.pop(context, true);

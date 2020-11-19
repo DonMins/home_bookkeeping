@@ -24,11 +24,21 @@ class AccountDb {
   }
 
   AccountDb.fromMap(Map<String, dynamic> map) {
-    id = map['id_account'];
+    id = map['id'];
     name = map['name'];
     balance = map['balance'];
     cartNum = map['cartNum'];
     description = map['description'];
     user = new UsersDb(map['user_id'], map['login'], map['password']);
   }
+
+  AccountDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    name = map['name'];
+    balance = map['balance'];
+    cartNum = map['cartNum'];
+    description = map['description'];
+    user = new UsersDb(int.parse(map['user']['id']), map['user']['login'], map['user']['password']);
+  }
+
 }

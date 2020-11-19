@@ -20,4 +20,10 @@ class IncomeCategoryDb {
     nameCategory = map['nameCategory'];
     user = new UsersDb(map['user_id'], map['login'], map['password']);
   }
+
+  IncomeCategoryDb.fromJson(Map<String, dynamic> map) {
+    id = int.parse(map['id']);
+    nameCategory = map['nameCategory'];
+    user = new UsersDb(int.parse(map['user']['id']), map['user']['login'], map['user']['password']);
+  }
 }

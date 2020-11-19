@@ -9,12 +9,6 @@ abstract class BaseAuth {
   Future<int> signIn(String email, String password);
 
   Future<UsersDb> getCurrentUser();
-
-  Future<void> sendEmailVerification();
-
-  Future<void> signOut();
-
-  Future<bool> isEmailVerified();
 }
 class Auth implements BaseAuth {
   HelperDB helper = new HelperDB();
@@ -28,17 +22,5 @@ class Auth implements BaseAuth {
 
   Future<UsersDb> getCurrentUser() async {
     return this.currentUser;
-  }
-
-  Future<void> signOut() async {
-    return ;
-  }
-
-  Future<void> sendEmailVerification() async {
-    return " ";
-  }
-
-  Future<bool> isEmailVerified() async {
-    return true;
   }
 }

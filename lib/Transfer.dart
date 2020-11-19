@@ -81,28 +81,28 @@ class TransferForm extends State<Transfer> {
                                     fontWeight: FontWeight.bold, fontSize: 16)),
                           ]),
                       subtitle: Text((item.date == null ? "" : DateFormat('dd.MM.yyy в kk:mm').format(DateTime.parse(item.date)).toString())),
-                      trailing: new PopupMenuButton(
-                        itemBuilder: (_) => <PopupMenuItem<String>>[
-                          new PopupMenuItem<String>(
-                              child: const Text('Редактировать'), value: '0'),
-                          new PopupMenuItem<String>(
-                              child: const Text('Удалить'), value: '1'),
-
-                        ],
-                        onSelected: (val) async {
-                          if (val =='0'){
-                            Alert(
-                              context: context,
-                              title: "Важно!",
-                              desc: "Лень было делать, но это не сложно ;)",
-                            ).show();
-                          }
-                          if (val == '1') {
-                            dbHelper.deleteIncome(item.id);
-                            refreshList();
-                          }
-                        },
-                      ),
+                      // trailing: new PopupMenuButton(
+                      //   itemBuilder: (_) => <PopupMenuItem<String>>[
+                      //     new PopupMenuItem<String>(
+                      //         child: const Text('Редактировать'), value: '0'),
+                      //     new PopupMenuItem<String>(
+                      //         child: const Text('Удалить'), value: '1'),
+                      //
+                      //   ],
+                      //   onSelected: (val) async {
+                      //     if (val =='0'){
+                      //       Alert(
+                      //         context: context,
+                      //         title: "Важно!",
+                      //         desc: "Лень было делать, но это не сложно ;)",
+                      //       ).show();
+                      //     }
+                      //     if (val == '1') {
+                      //       dbHelper.deleteIncome(item.id);
+                      //       refreshList();
+                      //     }
+                      //   },
+                      // ),
                     ));
               },
             );
@@ -151,17 +151,17 @@ class TransferForm extends State<Transfer> {
                     ]))),
       ),
       body: list(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          Object refresh = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddTransfer(
-                      title: "Добавить перевод", isUpdating: false,user: user)));
-          if (refresh != null) refreshList();
-        },
-        child: new Icon(Icons.add),
-      ),
+      // floatingActionButton: new FloatingActionButton(
+      //   onPressed: () async {
+      //     Object refresh = await Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => AddTransfer(
+      //                 title: "Добавить перевод", isUpdating: false,user: user)));
+      //     if (refresh != null) refreshList();
+      //   },
+      //   child: new Icon(Icons.add),
+      // ),
     );
   }
 }
